@@ -26,55 +26,80 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Dagang.in</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="../assets/css/style.css" rel="stylesheet">
+    <link href="../assets/css/login.css" rel="stylesheet">
 </head>
 
-<body class="bg-light">
-    <div class="container">
-        <div class="row justify-content-center mt-5">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="text-center">Daftar Dagang.in</h3>
-                    </div>
-                    <div class="card-body">
-                        <?php if ($message): ?>
-                            <div class="alert alert-info"><?php echo $message; ?></div>
-                        <?php endif; ?>
-                        <form method="POST">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="username" class="form-label">Username</label>
-                                    <input type="text" class="form-control" id="username" name="username" required>
+<body class="login-bg">
+    <div class="container-fluid d-flex align-items-center justify-content-center min-vh-100">
+        <div class="row justify-content-center w-100">
+            <div class="col-lg-10 col-xl-8">
+                <div class="login-card">
+                    <div class="row g-0">
+                        <div class="col-md-7 login-left">
+                            <div class="login-body">
+                                <h3 class="login-title">DAFTAR</h3>
+                                <div class="social-login">
+                                    <button class="social-btn"><i class="fab fa-google"></i></button>
+                                    <button class="social-btn"><i class="fab fa-github"></i></button>
+                                    <button class="social-btn"><i class="fab fa-linkedin"></i></button>
+                                    <button class="social-btn"><i class="fab fa-facebook"></i></button>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="email" name="email" required>
+                                <div class="divider">
+                                    <span>ATAU GUNAKAN EMAIL DAN DETAIL ANDA</span>
                                 </div>
+                                <?php if ($message): ?>
+                                    <div class="alert alert-info">
+                                        <?php echo $message; ?>
+                                    </div>
+                                <?php endif; ?>
+                                <form method="POST">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="username" class="form-label login-label">Username</label>
+                                            <input type="text" class="form-control login-input" id="username"
+                                                name="username" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="email" class="form-label login-label">Email</label>
+                                            <input type="email" class="form-control login-input" id="email" name="email"
+                                                required>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label login-label">Password</label>
+                                        <input type="password" class="form-control login-input" id="password"
+                                            name="password" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="store_name" class="form-label login-label">Nama Toko</label>
+                                        <input type="text" class="form-control login-input" id="store_name"
+                                            name="store_name" required>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="phone" class="form-label login-label">No. Telepon</label>
+                                            <input type="text" class="form-control login-input" id="phone" name="phone"
+                                                required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="address" class="form-label login-label">Alamat</label>
+                                            <textarea class="form-control login-input" id="address" name="address"
+                                                rows="1" required></textarea>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn login-btn w-100">DAFTAR</button>
+                                </form>
                             </div>
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <div class="col-md-5 login-right">
+                            <div class="login-cta">
+                                <h3 class="login-cta-title">HALO, SAHABAT!</h3>
+                                <p class="login-cta-text">Masuk dengan akun Anda untuk terhubung dengan kami</p>
+                                <a href="../login.php" class="btn login-cta-btn">MASUK</a>
                             </div>
-                            <div class="mb-3">
-                                <label for="store_name" class="form-label">Nama Toko</label>
-                                <input type="text" class="form-control" id="store_name" name="store_name" required>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="phone" class="form-label">No. Telepon</label>
-                                    <input type="text" class="form-control" id="phone" name="phone" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="address" class="form-label">Alamat</label>
-                                    <textarea class="form-control" id="address" name="address" rows="2"
-                                        required></textarea>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-accent w-100">Daftar</button>
-                        </form>
-                        <div class="text-center mt-3">
-                            <a href="../login.php">Sudah punya akun? Login</a>
                         </div>
                     </div>
                 </div>

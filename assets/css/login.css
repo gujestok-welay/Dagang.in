@@ -1,23 +1,45 @@
+/* Theme Color Variables */
+:root {
+  --brand-color: #1f3a64; 
+  --complementary-color: #d3d3d3; 
+  --accent-color: #ffd700; 
+  --neutral-color: #ffffff; /
+}
+
 /* Login Page Styles */
 .login-bg {
+  position: relative;
   background: var(--neutral-color); /* Warm neutral background */
-  background-image: url("login.png"); /* Use login.png as background */
+  font-family: "Montserrat", sans-serif; /* Modern sans-serif font */
+  color: #333333;
+}
+
+.login-bg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("../../login.png"); /* Use login.png as background */
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  font-family: "Montserrat", sans-serif; /* Modern sans-serif font */
-  color: #333333;
+  filter: blur(10px); /* Slight blur for attractive effect */
+  z-index: -1;
 }
 
 .login-card {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 15px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-  border: none;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 10px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   overflow: hidden;
-  max-width: 800px;
+  max-width: 900px;
   width: 100%;
   min-height: 500px;
+  backdrop-filter: blur(10px);
+  border: none; /* Ditambahkan dari style.css */
 }
 
 .login-left {
@@ -32,10 +54,10 @@
 .login-title {
   font-size: 20px;
   font-weight: 700;
-  color: var(--complementary-color);
-  margin-bottom: 10px;
+  color: var(--accent-color);
+  margin-bottom: 25px;
   text-transform: uppercase;
-  text-align: left;
+  text-align: center;
 }
 
 .login-body {
@@ -92,7 +114,7 @@
   margin-bottom: 10px;
 }
 
-.social-btn {
+.social-btn-login {
   background: transparent;
   border: 1px solid var(--complementary-color);
   border-radius: 50%;
@@ -106,18 +128,18 @@
   transition: background-color 0.2s;
 }
 
-.social-btn:hover {
+.social-btn-login:hover {
   background: var(--complementary-color);
   color: #ffffff;
 }
 
-.divider {
+.divider-login {
   text-align: center;
   margin: 15px 0;
   position: relative;
 }
 
-.divider::before {
+.divider-login::before {
   content: "";
   position: absolute;
   top: 50%;
@@ -127,7 +149,7 @@
   background: var(--complementary-color);
 }
 
-.divider span {
+.divider-login span {
   background: var(--brand-color);
   padding: 0 10px;
   color: var(--complementary-color);
@@ -166,7 +188,6 @@
   position: relative;
   z-index: 1;
   text-align: center;
-  color: #ffffff;
 }
 
 .login-cta-title {
@@ -174,13 +195,13 @@
   font-weight: 700;
   margin-bottom: 10px;
   text-transform: uppercase;
+  color: black;
 }
 
 .login-cta-text {
   font-size: 14px;
   font-weight: 400;
   margin-bottom: 20px;
-  color: #f0f0f0;
 }
 
 .login-cta-btn {

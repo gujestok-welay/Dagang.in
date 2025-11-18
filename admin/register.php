@@ -29,25 +29,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="../assets/css/style.css" rel="stylesheet">
-    <link href="../assets/css/login.css" rel="stylesheet">
+    <link href="../assets/css/register.css" rel="stylesheet">
 </head>
 
-<body class="login-bg">
+<body class="regis-bg">
     <div class="container-fluid d-flex align-items-center justify-content-center min-vh-100">
         <div class="row justify-content-center w-100">
             <div class="col-lg-10 col-xl-8">
-                <div class="login-card">
+                <div class="regis-card">
                     <div class="row g-0">
-                        <div class="col-md-7 login-left">
-                            <div class="login-body">
-                                <h3 class="login-title">DAFTAR</h3>
-                                <div class="social-login">
-                                    <button class="social-btn"><i class="fab fa-google"></i></button>
-                                    <button class="social-btn"><i class="fab fa-github"></i></button>
-                                    <button class="social-btn"><i class="fab fa-linkedin"></i></button>
-                                    <button class="social-btn"><i class="fab fa-facebook"></i></button>
+                        <div class="col-md-7 regis-left">
+                            <div class="regis-body">
+                                <h3 class="regis-title">DAFTAR</h3>
+                                <div class="social-regis">
+                                    <button class="social-btn-regis"><i class="fab fa-google"></i></button>
+                                    <button class="social-btn-regis"><i class="fab fa-github"></i></button>
+                                    <button class="social-btn-regis"><i class="fab fa-linkedin"></i></button>
+                                    <button class="social-btn-regis"><i class="fab fa-facebook"></i></button>
                                 </div>
-                                <div class="divider">
+                                <div class="divider-regis">
                                     <span>ATAU GUNAKAN EMAIL DAN DETAIL ANDA</span>
                                 </div>
                                 <?php if ($message): ?>
@@ -58,47 +58,49 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <form method="POST">
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label for="username" class="form-label login-label">Username</label>
-                                            <input type="text" class="form-control login-input" id="username"
+                                            <label for="username" class="form-label regis-label">Username</label>
+                                            <input type="text" class="form-control regis-input" id="username"
                                                 name="username" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="email" class="form-label login-label">Email</label>
-                                            <input type="email" class="form-control login-input" id="email" name="email"
+                                            <label for="email" class="form-label regis-label">Email</label>
+                                            <input type="email" class="form-control regis-input" id="email" name="email"
                                                 required>
                                         </div>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="password" class="form-label login-label">Password</label>
-                                        <input type="password" class="form-control login-input" id="password"
+                                        <label for="password" class="form-label regis-label">Password</label>
+                                        <input type="password" class="form-control regis-input" id="password"
                                             name="password" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="store_name" class="form-label login-label">Nama Toko</label>
-                                        <input type="text" class="form-control login-input" id="store_name"
+                                        <label for="store_name" class="form-label regis-label">Nama Toko</label>
+                                        <input type="text" class="form-control regis-input" id="store_name"
                                             name="store_name" required>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label for="phone" class="form-label login-label">No. Telepon</label>
-                                            <input type="text" class="form-control login-input" id="phone" name="phone"
+                                            <label for="phone" class="form-label regis-label">No.
+                                                Telepon</label>
+                                            <input type="text" class="form-control regis-input" id="phone" name="phone"
                                                 required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="address" class="form-label login-label">Alamat</label>
-                                            <textarea class="form-control login-input" id="address" name="address"
+                                            <label for="address" class="form-label regis-label">Alamat</label>
+                                            <textarea class="form-control regis-input" id="address" name="address"
                                                 rows="1" required></textarea>
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn login-btn w-100">DAFTAR</button>
+                                    <button type="submit" class="btn regis-btn w-100">BUAT AKUN SAYA</button>
                                 </form>
                             </div>
                         </div>
-                        <div class="col-md-5 login-right">
-                            <div class="login-cta">
-                                <h3 class="login-cta-title">HALO, SAHABAT!</h3>
-                                <p class="login-cta-text">Masuk dengan akun Anda untuk terhubung dengan kami</p>
-                                <a href="../login.php" class="btn login-cta-btn">MASUK</a>
+                        <div class="col-md-5 regis-right">
+                            <div class="regis-cta">
+                                <h3 class="regis-cta-title">Sudah Punya Akun?</h3>
+                                <p class="regis-cta-text">Masuk di sini untuk mengakses dasbor dan semua fitur Anda.
+                                </p>
+                                <a href="../login.php" class="btn regis-cta-btn">MASUK 🙌</a>
                             </div>
                         </div>
                     </div>

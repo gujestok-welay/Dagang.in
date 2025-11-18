@@ -30,7 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="assets/css/style.css" rel="stylesheet">
     <link href="assets/css/login.css" rel="stylesheet">
 </head>
 
@@ -44,12 +43,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <div class="login-body">
                                 <h3 class="login-title">MASUK</h3>
                                 <div class="social-login">
-                                    <button class="social-btn"><i class="fab fa-google"></i></button>
-                                    <button class="social-btn"><i class="fab fa-github"></i></button>
-                                    <button class="social-btn"><i class="fab fa-linkedin"></i></button>
-                                    <button class="social-btn"><i class="fab fa-facebook"></i></button>
+                                    <button class="social-btn-login"><i class="fab fa-google"></i></button>
+                                    <button class="social-btn-login"><i class="fab fa-github"></i></button>
+                                    <button class="social-btn-login"><i class="fab fa-linkedin"></i></button>
+                                    <button class="social-btn-login"><i class="fab fa-facebook"></i></button>
                                 </div>
-                                <div class="divider">
+                                <div class="divider-login">
                                     <span>ATAU GUNAKAN EMAIL DAN KATA SANDI ANDA</span>
                                 </div>
                                 <?php if ($message): ?>
@@ -75,10 +74,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                         <div class="col-md-6 login-right">
                             <div class="login-cta">
-                                <h3 class="login-cta-title">HALO, SAHABAT!</h3>
-                                <p class="login-cta-text">Daftar dengan detail pribadi Anda untuk terhubung dengan kami
+                                <h3 class="login-cta-title">Siap Berkembang Bersama?</h3>
+                                <p class="login-cta-text">Jangan ketinggalan! Bergabunglah dengan ribuan sahabat UMKM
+                                    lainnya yang telah berkembang bersama kami.
                                 </p>
-                                <a href="admin/register.php" class="btn login-cta-btn">DAFTAR</a>
+                                <a href="admin/register.php" class="btn login-cta-btn">BERGABUNG 🙌</a>
                             </div>
                         </div>
                     </div>

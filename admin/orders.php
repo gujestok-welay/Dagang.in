@@ -4,7 +4,7 @@ require_once '../config/includes/config.php';
 
 $currentPage = 'orders';
 $pageTitle = 'Manajemen Pesanan';
-require_once 'templates/header.php';
+
 if (isset($_GET['logout'])) {
     logout();
 }
@@ -84,7 +84,7 @@ require_once 'templates/header.php';
                                         <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
                                         <select name="status" class="form-select form-select-sm d-inline w-auto"
                                             onchange="this.form.submit()">
-                                            <option value=" pending" <?php echo $order['status'] == 'pending' ? 'selected' : ''; ?>>Pending</option>
+                                            <option value="pending" <?php echo $order['status'] == 'pending' ? 'selected' : ''; ?>>Pending</option>
                                             <option value="processing" <?php echo $order['status'] == 'processing' ? 'selected' : ''; ?>>Diproses</option>
                                             <option value="completed" <?php echo $order['status'] == 'completed' ? 'selected' : ''; ?>>Selesai</option>
                                             <option value="cancelled" <?php echo $order['status'] == 'cancelled' ? 'selected' : ''; ?>>Dibatalkan</option>

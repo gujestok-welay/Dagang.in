@@ -2,6 +2,8 @@
 require_once '../config/includes/auth.php';
 require_once '../config/includes/config.php';
 
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT); // aktifkan laporan error (taruh setelah require config)
+
 if (isset($_GET['logout'])) {
     logout();
 }
@@ -29,55 +31,74 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $notes = $_POST['notes'];
     $order_items = $_POST['order_items'];
 
-    // Insert customer
-    $customer_stmt = $conn->prepare("INSERT INTO customers (name, phone, email, address) VALUES (?, ?, ?, ?)");
-    $customer_stmt->bind_param("ssss", $customer_name, $customer_phone, $customer_email, $customer_address);
-    $customer_stmt->execute();
-    $customer_id = $conn->insert_id;
+    // Validasi dasar
+    if (empty($_POST['order_items'])) {
+        $message = 'Tidak ada item produk.';
+    } else {
+        $conn->begin_transaction();
+        try {
+            $customer_stmt = $conn->prepare("INSERT INTO customers (user_id, name, phone, email, address) VALUES (?, ?, ?, ?, ?)");
+            $customer_stmt->bind_param("issss", $user_id, $customer_name, $customer_phone, $customer_email, $customer_address);
+            $customer_stmt->execute();
+            $customer_id = $conn->insert_id;
 
-    // Calculate total
-    $total = 0;
-    foreach ($order_items as $item) {
-        $product_id = $item['product_id'];
-        $quantity = $item['quantity'];
+            $total = 0;
+            foreach ($order_items as $item) {
+                $product_id = (int) $item['product_id'];
+                $quantity = (int) $item['quantity'];
+                $product_query = $conn->prepare("SELECT price FROM products WHERE id = ? AND user_id = ?");
+                $product_query->bind_param("ii", $product_id, $user_id);
+                $product_query->execute();
+                $product = $product_query->get_result()->fetch_assoc();
+                if (!$product) {
+                    throw new Exception("Produk tidak ditemukan atau bukan milik user.");
+                }
+                $total += $product['price'] * $quantity;
+            }
 
-        $product_query = $conn->prepare("SELECT price FROM products WHERE id = ?");
-        $product_query->bind_param("i", $product_id);
-        $product_query->execute();
-        $product_result = $product_query->get_result();
-        $product = $product_result->fetch_assoc();
+            // Insert order (tambahkan status + created_at)
+            $status = 'pending';
+            $order_stmt = $conn->prepare("
+                INSERT INTO orders (customer_id, user_id, total, payment_method, notes, status, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, NOW())
+            ");
+            // Tipe parameter: customer_id (i), user_id (i), total (d), payment_method (s), notes (s), status (s)
+            $order_stmt->bind_param("iidsss", $customer_id, $user_id, $total, $payment_method, $notes, $status);
+            $order_stmt->execute();
+            $order_id = $conn->insert_id;
 
-        $total += $product['price'] * $quantity;
+            foreach ($order_items as $item) {
+                $product_id = (int) $item['product_id'];
+                $quantity = (int) $item['quantity'];
+                $product_query = $conn->prepare("SELECT price, stock FROM products WHERE id = ? AND user_id = ?");
+                $product_query->bind_param("ii", $product_id, $user_id);
+                $product_query->execute();
+                $product = $product_query->get_result()->fetch_assoc();
+                if (!$product) {
+                    throw new Exception("Produk tidak ditemukan.");
+                }
+                if ($product['stock'] < $quantity) {
+                    throw new Exception("Stok produk kurang.");
+                }
+
+                $item_stmt = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)");
+                $item_stmt->bind_param("iiid", $order_id, $product_id, $quantity, $product['price']);
+                $item_stmt->execute();
+
+                $update_stock = $conn->prepare("UPDATE products SET stock = stock - ? WHERE id = ?");
+                $update_stock->bind_param("ii", $quantity, $product_id);
+                $update_stock->execute();
+            }
+
+            $conn->commit();
+            // Redirect agar terlihat di daftar
+            header("Location: orders.php?added=1");
+            exit();
+        } catch (Exception $e) {
+            $conn->rollback();
+            $message = "Gagal menambah pesanan: " . htmlspecialchars($e->getMessage());
+        }
     }
-
-    // Insert order
-    $order_stmt = $conn->prepare("INSERT INTO orders (customer_id, user_id, total, payment_method, notes) VALUES (?, ?, ?, ?, ?)");
-    $order_stmt->bind_param("iisss", $customer_id, $user_id, $total, $payment_method, $notes);
-    $order_stmt->execute();
-    $order_id = $conn->insert_id;
-
-    // Insert order items and update stock
-    foreach ($order_items as $item) {
-        $product_id = $item['product_id'];
-        $quantity = $item['quantity'];
-
-        $product_query = $conn->prepare("SELECT price FROM products WHERE id = ?");
-        $product_query->bind_param("i", $product_id);
-        $product_query->execute();
-        $product_result = $product_query->get_result();
-        $product = $product_result->fetch_assoc();
-
-        $item_stmt = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)");
-        $item_stmt->bind_param("iiid", $order_id, $product_id, $quantity, $product['price']);
-        $item_stmt->execute();
-
-        // Update stock
-        $update_stock = $conn->prepare("UPDATE products SET stock = stock - ? WHERE id = ?");
-        $update_stock->bind_param("ii", $quantity, $product_id);
-        $update_stock->execute();
-    }
-
-    $message = "Pesanan berhasil ditambahkan!";
 }
 ?>
 

@@ -40,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $price = str_replace(['.', ','], '', $_POST['price'] ?? '0');
         $price = (float) $price;
         $stock = (int) ($_POST['stock'] ?? 0);
+        $category_id = isset($_POST['category_id']) && !empty($_POST['category_id']) ? (int) $_POST['category_id'] : NULL;
         $image = $product['image']; // Keep old image by default
 
         // Validate input fields
@@ -74,12 +75,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             // Update product if no errors
             if (empty($message)) {
-                $stmt = $conn->prepare("UPDATE products SET name = ?, description = ?, price = ?, stock = ?, image = ? WHERE id = ? AND user_id = ?");
+                $stmt = $conn->prepare("UPDATE products SET name = ?, description = ?, price = ?, stock = ?, category_id = ?, image = ? WHERE id = ? AND user_id = ?");
 
                 if (!$stmt) {
                     $message = "Kesalahan database: " . $conn->error;
                 } else {
-                    $stmt->bind_param("ssdisii", $name, $description, $price, $stock, $image, $product_id, $user_id);
+                    $stmt->bind_param("ssdiisii", $name, $description, $price, $stock, $category_id, $image, $product_id, $user_id);
 
                     if ($stmt->execute()) {
                         $message = "Produk berhasil diperbarui!";
@@ -97,6 +98,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } catch (Exception $e) {
         $message = "Error: " . $e->getMessage();
     }
+}
+
+// Get categories for select dropdown
+$categories = null;
+$categories_query = $conn->prepare("SELECT id, name FROM categories WHERE user_id = ? AND is_active = 1 ORDER BY name");
+if ($categories_query) {
+    $categories_query->bind_param("i", $user_id);
+    $categories_query->execute();
+    $categories = $categories_query->get_result();
 }
 ?>
 
@@ -136,6 +146,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <input type="number" class="form-control" id="stock" name="stock"
                                     value="<?php echo $product['stock']; ?>" required>
                             </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="category_id" class="form-label">Kategori</label>
+                            <select class="form-select" id="category_id" name="category_id">
+                                <option value="">-- Pilih Kategori --</option>
+                                <?php if ($categories && $categories->num_rows > 0): ?>
+                                    <?php while ($cat = $categories->fetch_assoc()): ?>
+                                        <option value="<?php echo $cat['id']; ?>" <?php echo ($product['category_id'] == $cat['id']) ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($cat['name']); ?>
+                                        </option>
+                                    <?php endwhile; ?>
+                                <?php endif; ?>
+                            </select>
+                            <small class="text-muted"><a href="categories.php" target="_blank">Kelola
+                                    kategori</a></small>
                         </div>
                         <div class="mb-3">
                             <label for="image" class="form-label">Gambar Produk</label>

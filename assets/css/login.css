@@ -1,63 +1,125 @@
-/* Theme Color Variables */
+/* Theme Color Variables - Unified with Main Theme */
 :root {
-  --brand-color: #1f3a64; 
-  --complementary-color: #d3d3d3; 
-  --accent-color: #ffd700; 
-  --neutral-color: #ffffff; /
+  /* Primary Colors - Main Theme */
+  --primary-color: #2d4059; /* Deep Navy Blue */
+  --primary-light: #3e5269;
+  --primary-dark: #1a2c42;
+
+  /* Secondary Colors */
+  --secondary-color: #ea5455; /* Coral Red */
+  --secondary-light: #ff6b6b;
+  --secondary-dark: #c44345;
+
+  /* Accent Colors */
+  --accent-color: #f07b3f; /* Warm Orange */
+  --accent-light: #ffd460; /* Yellow highlight */
+  --accent-dark: #e65f2b;
+
+  /* Neutral Colors */
+  --dominant-color: #fafafa; /* Background */
+  --dominant-light: #ffffff;
+  --bg-light: #f8f9fa;
+
+  /* Gradients */
+  --gradient-ocean: linear-gradient(135deg, #2d4059 0%, #ea5455 100%);
+  --gradient-warm: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --gradient-sunset: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  --gradient-button: linear-gradient(135deg, #f07b3f 0%, #ffd460 100%);
+
+  /* Backward Compatibility */
+  --brand-color: #2d4059;
+  --complementary-color: #e8e8e8;
+  --neutral-color: #fafafa;
 }
 
 /* Login Page Styles */
 .login-bg {
   position: relative;
-  background: var(--neutral-color); /* Warm neutral background */
-  font-family: "Montserrat", sans-serif; /* Modern sans-serif font */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
   color: #333333;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .login-bg::before {
   content: "";
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url("../../login.png"); /* Use login.png as background */
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  filter: blur(10px); /* Slight blur for attractive effect */
-  z-index: -1;
+  background: linear-gradient(
+    45deg,
+    rgba(240, 123, 63, 0.1) 0%,
+    rgba(234, 84, 85, 0.1) 50%,
+    rgba(255, 212, 96, 0.1) 100%
+  );
+  z-index: 0;
+  animation: gradientShift 15s ease infinite;
+  pointer-events: none;
+}
+
+@keyframes gradientShift {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 .login-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--dominant-color);
   border-radius: 15px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 10px 20px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   max-width: 900px;
   width: 100%;
   min-height: 500px;
-  backdrop-filter: blur(10px);
-  border: none; /* Ditambahkan dari style.css */
+  border: none;
+  position: relative;
+  z-index: 1;
 }
 
 .login-left {
-  background: var(--brand-color); /* Tan background */
+  background: var(--primary-color);
   padding: 20px 15px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   min-height: 500px;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-left::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(234, 84, 85, 0.1) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
 }
 
 .login-title {
   font-size: 20px;
   font-weight: 700;
-  color: var(--accent-color);
+  color: var(--accent-light);
   margin-bottom: 25px;
   text-transform: uppercase;
   text-align: center;
+  letter-spacing: 2px;
 }
 
 .login-body {
@@ -66,13 +128,13 @@
 
 .login-label {
   font-weight: 400;
-  color: var(--complementary-color);
+  color: var(--dominant-light); /* Teks terang di background biru navy */
   margin-bottom: 5px;
   font-size: 12px;
 }
 
 .login-input {
-  background: #ffffff;
+  background: #ffffff; /* Input tetap putih murni untuk kontras */
   border: 1px solid #dddddd;
   border-radius: 8px;
   padding: 8px 10px;
@@ -82,8 +144,8 @@
 }
 
 .login-input:focus {
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 0.2rem rgba(255, 160, 122, 0.25);
+  border-color: var(--accent-color); /* 10% - Aksen: Border gold saat focus */
+  box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25);
   outline: none;
 }
 
@@ -92,20 +154,24 @@
 }
 
 .login-btn {
-  background: var(--accent-color);
+  background: var(--gradient-button);
   border: none;
   border-radius: 8px;
   padding: 10px 12px;
   font-size: 14px;
   font-weight: 700;
-  color: #ffffff;
+  color: white;
   text-transform: uppercase;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
   margin-top: 15px;
+  box-shadow: 0 4px 15px rgba(240, 123, 63, 0.3);
 }
 
 .login-btn:hover {
-  background: #e55a2b;
+  background: linear-gradient(135deg, #e65f2b 0%, #f07b3f 100%);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(240, 123, 63, 0.4);
 }
 
 .social-login {
@@ -116,21 +182,33 @@
 
 .social-btn-login {
   background: transparent;
-  border: 1px solid var(--complementary-color);
+  border: 1px solid var(--dominant-light);
   border-radius: 50%;
   width: 35px;
   height: 35px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--complementary-color);
+  color: var(--dominant-light);
   font-size: 14px;
   transition: background-color 0.2s;
 }
 
 .social-btn-login:hover {
-  background: var(--complementary-color);
-  color: #ffffff;
+  background: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+}
+
+.social-btn-login:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.social-btn-login:disabled:hover {
+  background: transparent;
+  color: var(--dominant-light);
+  border-color: var(--dominant-light);
 }
 
 .divider-login {
@@ -146,13 +224,13 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: var(--complementary-color);
+  background: var(--dominant-light);
 }
 
 .divider-login span {
-  background: var(--brand-color);
+  background: var(--primary-color);
   padding: 0 10px;
-  color: var(--complementary-color);
+  color: var(--dominant-light);
   font-size: 12px;
   font-weight: 400;
   text-transform: uppercase;
@@ -164,18 +242,18 @@
 }
 
 .forgot-link {
-  color: var(--complementary-color);
+  color: var(--dominant-light);
   text-decoration: none;
   font-size: 14px;
 }
 
 .forgot-link:hover {
-  color: var(--accent-color);
+  color: var(--accent-light);
   text-decoration: underline;
 }
 
 .login-right {
-  background: var(--complementary-color); /* Olive green background */
+  background: var(--dominant-light); /* 60% - Dominan: Panel kanan off-white */
   position: relative;
   display: flex;
   align-items: center;
@@ -195,7 +273,7 @@
   font-weight: 700;
   margin-bottom: 10px;
   text-transform: uppercase;
-  color: black;
+  color: var(--primary-color);
 }
 
 .login-cta-text {
@@ -205,20 +283,22 @@
 }
 
 .login-cta-btn {
-  background: var(--accent-color);
+  background: white;
   border: 2px solid var(--accent-color);
   border-radius: 8px;
   padding: 10px 20px;
   font-size: 14px;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--accent-color);
   text-transform: uppercase;
   text-decoration: none;
-  transition: background-color 0.2s, color 0.2s;
+  transition: all 0.3s ease;
 }
 
 .login-cta-btn:hover {
-  background: #e55a2b;
-  border-color: #e55a2b;
-  color: #ffffff;
+  background: var(--gradient-button);
+  border-color: transparent;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(240, 123, 63, 0.3);
 }

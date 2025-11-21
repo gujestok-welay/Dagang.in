@@ -47,7 +47,7 @@ CREATE TABLE orders (
     customer_id INT NOT NULL,
     user_id INT NOT NULL,
     total DECIMAL(10,2) NOT NULL,
-    status ENUM('pending', 'processing', 'completed', 'cancelled') DEFAULT 'pending',
+    status ENUM('pending', 'processing', 'shipped', 'delivered', 'cancelled', 'completed') DEFAULT 'pending',
     payment_method VARCHAR(50),
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

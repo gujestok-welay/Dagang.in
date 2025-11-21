@@ -31,7 +31,7 @@ $user = $user_result->fetch_assoc();
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-complementary">
+    <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
             <div class="navbar-brand_dashboard me-4">
                 <img src="../assets/images/log.png" alt="">

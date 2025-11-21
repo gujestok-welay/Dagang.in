@@ -7,15 +7,39 @@ if (isLoggedIn()) {
 }
 
 $message = '';
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+$login_attempts = 0;
 
-    if (login($username, $password)) {
-        header("Location: admin/dashboard.php");
-        exit();
+// Simple rate limiting using session
+if (!isset($_SESSION['login_attempts'])) {
+    $_SESSION['login_attempts'] = 0;
+    $_SESSION['last_attempt_time'] = time();
+}
+
+// Reset attempts after 15 minutes
+if (time() - $_SESSION['last_attempt_time'] > 900) {
+    $_SESSION['login_attempts'] = 0;
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Check rate limiting
+    if ($_SESSION['login_attempts'] >= 5) {
+        $wait_time = 900 - (time() - $_SESSION['last_attempt_time']);
+        $message = "Terlalu banyak percobaan login. Silakan coba lagi dalam " . ceil($wait_time / 60) . " menit.";
     } else {
-        $message = "Username atau password salah!";
+        $username = trim($_POST['username']);
+        $password = $_POST['password'];
+
+        if (login($username, $password)) {
+            // Reset attempts on successful login
+            $_SESSION['login_attempts'] = 0;
+            header("Location: admin/dashboard.php");
+            exit();
+        } else {
+            $_SESSION['login_attempts']++;
+            $_SESSION['last_attempt_time'] = time();
+            // Generic error message for security
+            $message = "Login gagal. Silakan periksa kredensial Anda.";
+        }
     }
 }
 ?>
@@ -28,7 +52,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Dagang.in</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="assets/css/login.css" rel="stylesheet">
 </head>
@@ -43,30 +68,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <div class="login-body">
                                 <h3 class="login-title">MASUK</h3>
                                 <div class="social-login">
-                                    <button class="social-btn-login"><i class="fab fa-google"></i></button>
-                                    <button class="social-btn-login"><i class="fab fa-github"></i></button>
-                                    <button class="social-btn-login"><i class="fab fa-linkedin"></i></button>
-                                    <button class="social-btn-login"><i class="fab fa-facebook"></i></button>
+                                    <button class="social-btn-login" disabled title="Segera Hadir"><i
+                                            class="fab fa-google"></i></button>
+                                    <button class="social-btn-login" disabled title="Segera Hadir"><i
+                                            class="fab fa-github"></i></button>
+                                    <button class="social-btn-login" disabled title="Segera Hadir"><i
+                                            class="fab fa-linkedin"></i></button>
+                                    <button class="social-btn-login" disabled title="Segera Hadir"><i
+                                            class="fab fa-facebook"></i></button>
                                 </div>
                                 <div class="divider-login">
                                     <span>ATAU GUNAKAN EMAIL DAN KATA SANDI ANDA</span>
                                 </div>
                                 <?php if ($message): ?>
-                                    <div class="alert alert-danger"><?php echo $message; ?></div>
+                                    <div class="alert alert-danger" role="alert">
+                                        <i class="fas fa-exclamation-circle me-2"></i>
+                                        <?php echo htmlspecialchars($message); ?>
+                                    </div>
                                 <?php endif; ?>
-                                <form method="POST">
+                                <?php if (isset($_SESSION['login_attempts']) && $_SESSION['login_attempts'] > 0): ?>
+                                    <div class="alert alert-warning alert-sm" role="alert">
+                                        <small>Percobaan login: <?php echo $_SESSION['login_attempts']; ?>/5</small>
+                                    </div>
+                                <?php endif; ?>
+                                <form method="POST" autocomplete="on">
                                     <div class="mb-3">
                                         <label for="username" class="form-label login-label">Username</label>
                                         <input type="text" class="form-control login-input" id="username"
-                                            name="username" required>
+                                            name="username" autocomplete="username"
+                                            value="<?php echo isset($_POST['username']) ? htmlspecialchars($_POST['username']) : ''; ?>"
+                                            required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="password" class="form-label login-label">Password</label>
                                         <input type="password" class="form-control login-input" id="password"
-                                            name="password" required>
+                                            name="password" autocomplete="current-password" required>
                                     </div>
                                     <div class="forgot-password">
-                                        <a href="#" class="forgot-link">Lupa Kata Sandi?</a>
+                                        <span class="forgot-link" style="opacity: 0.6; cursor: not-allowed;"
+                                            title="Fitur segera hadir">Lupa Kata Sandi?</span>
                                     </div>
                                     <button type="submit" class="btn login-btn w-100">MASUK</button>
                                 </form>

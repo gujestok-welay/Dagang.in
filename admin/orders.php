@@ -8,6 +8,12 @@ $user_id = $_SESSION['user_id'];
 $message = '';
 $message_type = 'danger';
 
+// Pagination & filter defaults (dibutuhkan sebelum POST)
+$items_per_page = 15;
+$current_page = max(1, (int) ($_GET['page'] ?? 1));
+$search = trim($_GET['search'] ?? '');
+$status_filter = $_GET['status'] ?? '';
+
 // Handle status update
 if (isset($_POST['update_status'])) {
     try {
@@ -26,6 +32,17 @@ if (isset($_POST['update_status'])) {
                 if ($update_stmt->execute()) {
                     $message = "Status pesanan berhasil diperbarui!";
                     $message_type = 'success';
+
+                    // Preserve filter parameters from POST
+                    if (!empty($_POST['search'])) {
+                        $search = trim($_POST['search']);
+                    }
+                    if (!empty($_POST['status_filter'])) {
+                        $status_filter = $_POST['status_filter'];
+                    }
+                    if (!empty($_POST['page'])) {
+                        $current_page = (int) $_POST['page'];
+                    }
                 } else {
                     $message = "Gagal memperbarui status.";
                 }
@@ -36,14 +53,6 @@ if (isset($_POST['update_status'])) {
         $message = "Error: " . $e->getMessage();
     }
 }
-
-// Pagination settings
-$items_per_page = 15;
-$current_page = max(1, (int) ($_GET['page'] ?? 1));
-
-// Get search and filter parameters
-$search = trim($_GET['search'] ?? '');
-$status_filter = $_GET['status'] ?? '';
 
 // Build WHERE clause for filtering
 $where_conditions = ["o.user_id = ?"];
@@ -123,7 +132,19 @@ $orders_query->close();
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Manajemen Pesanan</h2>
-        <a href="add_order.php" class="btn btn-primary">Tambah Pesanan</a>
+        <div class="btn-group" role="group">
+            <a href="add_order.php" class="btn btn-primary">Tambah Pesanan</a>
+            <div class="btn-group" role="group">
+                <button id="exportOrdersBtn" type="button" class="btn btn-success dropdown-toggle"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-download"></i> Export
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="exportOrdersBtn">
+                    <li><a class="dropdown-item" href="export_orders.php?format=csv">Export ke CSV</a></li>
+                    <li><a class="dropdown-item" href="export_orders.php?format=excel">Export ke Excel</a></li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <?php if ($message): ?>
@@ -209,6 +230,10 @@ $orders_query->close();
                                     <td>
                                         <form method="POST" class="d-inline">
                                             <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+                                            <input type="hidden" name="search" value="<?php echo htmlspecialchars($search); ?>">
+                                            <input type="hidden" name="status_filter"
+                                                value="<?php echo htmlspecialchars($status_filter); ?>">
+                                            <input type="hidden" name="page" value="<?php echo $current_page; ?>">
                                             <select name="status" class="form-select form-select-sm d-inline w-auto"
                                                 onchange="this.form.submit()">
                                                 <option value="pending" <?php echo $order['status'] == 'pending' ? 'selected' : ''; ?>>Pending</option>

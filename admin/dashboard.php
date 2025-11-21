@@ -1,20 +1,7 @@
 <?php
-// Tentukan halaman saat ini dan judulnya
 $currentPage = 'dashboard';
 $pageTitle = 'Dashboard';
 require_once 'templates/header.php';
-
-require_once '../config/includes/auth.php';
-require_once '../config/includes/config.php';
-
-if (isset($_GET['logout'])) {
-    logout();
-}
-
-if (!isLoggedIn()) {
-    header("Location: ../login.php");
-    exit();
-}
 
 $user_id = $_SESSION['user_id'];
 

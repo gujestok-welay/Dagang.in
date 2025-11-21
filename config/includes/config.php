@@ -25,4 +25,13 @@ define('ASSETS_PATH', BASE_PATH . '/assets');
 define('CONFIG_PATH', BASE_PATH . '/config');
 define('DATABASE_PATH', BASE_PATH . '/database');
 define('TESTS_PATH', BASE_PATH . '/tests');
+
+// Store configuration
+define('STORE_NAME', 'Dagang.in');
+define('STORE_DESCRIPTION', 'Platform Toko Online Terpercaya');
+
+// CDN Assets - untuk konsistensi di semua template
+define('BOOTSTRAP_CSS', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
+define('BOOTSTRAP_JS', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js');
+define('FONTAWESOME_CSS', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
 ?>

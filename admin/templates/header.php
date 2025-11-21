@@ -1,6 +1,6 @@
 <?php
-require_once '../config/includes/auth.php';
-require_once '../config/includes/config.php';
+require_once __DIR__ . '/../../config/includes/auth.php';
+require_once __DIR__ . '/../../config/includes/config.php';
 
 if (isset($_GET['logout'])) {
     logout();

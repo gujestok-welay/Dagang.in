@@ -1,17 +1,9 @@
 <?php
-require_once '../config/includes/auth.php';
-require_once '../config/includes/config.php';
+$currentPage = 'orders';
+$pageTitle = 'Tambah Pesanan';
+require_once 'templates/header.php';
 
-mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT); // aktifkan laporan error (taruh setelah require config)
-
-if (isset($_GET['logout'])) {
-    logout();
-}
-
-if (!isLoggedIn()) {
-    header("Location: ../login.php");
-    exit();
-}
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 $user_id = $_SESSION['user_id'];
 $message = '';
@@ -101,48 +93,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
-
-<!DOCTYPE html>
-<html lang="id">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Pesanan - Dagang.in</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../assets/css/style.css" rel="stylesheet">
-</head>
-
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-brand">
-        <div class="container">
-            <a class="navbar-brand" href="#">Dagang.in</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="dashboard.php">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="products.php">Produk</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="orders.php">Pesanan</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="customers.php">Pelanggan</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="?logout=1">Logout</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
     <div class="container mt-4">
         <div class="row justify-content-center">
@@ -244,7 +194,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let itemCount = 1;
 
@@ -291,6 +240,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             document.getElementById('total-amount').textContent = total.toLocaleString('id-ID');
         }
     </script>
-</body>
 
-</html>
+<?php require_once 'templates/footer.php'; ?>

@@ -3,6 +3,7 @@ $currentPage = 'products';
 $pageTitle = 'Tambah Produk';
 require_once 'templates/header.php';
 require_once '../config/utils/FileUploadValidator.php';
+require_once '../config/utils/ImageProcessor.php';
 
 $user_id = $_SESSION['user_id'];
 $message = '';
@@ -39,6 +40,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $message = $move_result['message'];
                     } else {
                         $image = $new_filename;
+                        // Generate thumbnail (silent failure allowed)
+                        $thumb_dir = "../assets/uploads/thumbs";
+                        if (!is_dir($thumb_dir)) {
+                            @mkdir($thumb_dir, 0755, true);
+                        }
+                        $thumb_path = $thumb_dir . '/' . $new_filename;
+                        $thumb_result = ImageProcessor::generateSquareThumbnail($target_file, $thumb_path, 400);
+                        if (!$thumb_result['success']) {
+                            // Append non-blocking warning
+                            $message = empty($message) ? 'Thumbnail gagal dibuat: ' . htmlspecialchars($thumb_result['message']) : $message;
+                        }
                     }
                 }
             }
@@ -50,7 +62,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (!$stmt) {
                     $message = "Kesalahan database: " . $conn->error;
                 } else {
-                    $stmt->bind_param("issdiii", $user_id, $name, $description, $price, $stock, $category_id, $image);
+                    // Bind: user_id(i) name(s) description(s) price(d) stock(i) category_id(i/null -> i) image(s)
+                    $stmt->bind_param("issdiis", $user_id, $name, $description, $price, $stock, $category_id, $image);
 
                     if ($stmt->execute()) {
                         $message = "Produk berhasil ditambahkan!";

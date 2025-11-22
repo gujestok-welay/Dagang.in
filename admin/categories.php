@@ -1,86 +1,196 @@
 <?php
+// Rebuild bersih file categories.php (memperbaiki korup kode & warning)
 $currentPage = 'categories';
 $pageTitle = 'Manajemen Kategori';
-require_once 'templates/header.php';
+require_once 'templates/header.php'; // menyediakan $conn dan session
 
-$user_id = $_SESSION['user_id'];
 $message = '';
 $message_type = 'danger';
+$debug = isset($_GET['debug']);
 
-// Handle delete
-if (isset($_GET['delete'])) {
-    try {
-        $category_id = (int) $_GET['delete'];
-        $delete_stmt = $conn->prepare("DELETE FROM categories WHERE id = ? AND user_id = ?");
-        if ($delete_stmt) {
-            $delete_stmt->bind_param("ii", $category_id, $user_id);
-            $delete_stmt->execute();
-            $delete_stmt->close();
+// Flash message retrieval (PRG)
+if (isset($_SESSION['flash_message'])) {
+    $message = $_SESSION['flash_message'];
+    $message_type = $_SESSION['flash_type'] ?? 'info';
+    unset($_SESSION['flash_message'], $_SESSION['flash_type']);
+}
+
+// CSRF helpers
+function get_csrf_token()
+{
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+function verify_csrf_token($token)
+{
+    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
+}
+function flash($msg, $type = 'info')
+{
+    $_SESSION['flash_message'] = $msg;
+    $_SESSION['flash_type'] = $type;
+}
+
+// Slug unik global (kolom slug UNIQUE)
+function generate_unique_slug($conn, $base_slug, $exclude_id = 0)
+{
+    $base_slug = $base_slug ?: 'kategori';
+    $slug = $base_slug;
+    $i = 1;
+    $stmt = $conn->prepare("SELECT id FROM categories WHERE slug = ? AND id <> ? LIMIT 1");
+    if (!$stmt)
+        return $slug;
+    while (true) {
+        $stmt->bind_param("si", $slug, $exclude_id);
+        $stmt->execute();
+        $stmt->store_result();
+        if ($stmt->num_rows === 0) {
+            $stmt->close();
+            return $slug;
         }
-        header("Location: categories.php");
-        exit();
-    } catch (Exception $e) {
-        $message = "Error: " . $e->getMessage();
+        $slug = $base_slug . '-' . $i;
+        $i++;
     }
 }
 
-// Handle add/update
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    try {
-        $category_id = isset($_POST['category_id']) ? (int) $_POST['category_id'] : 0;
-        $name = trim($_POST['name'] ?? '');
-        $description = trim($_POST['description'] ?? '');
-        $color = trim($_POST['color'] ?? '#007bff');
-        $is_active = isset($_POST['is_active']) ? 1 : 0;
+// Cek eksistensi tabel
+$table_exists = false;
+$table_check = $conn->query("SHOW TABLES LIKE 'categories'");
+if ($table_check && $table_check->num_rows > 0) {
+    $table_exists = true;
+} else {
+    if (!$message) {
+        $message = "Tabel categories belum ada. Jalankan migration dulu.";
+        $message_type = 'warning';
+    }
+}
 
-        // Validate input
-        if (empty($name)) {
-            $message = "Nama kategori harus diisi.";
-        } else {
-            // Generate slug
-            $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $name)));
+// Handle DELETE
+if ($table_exists && isset($_GET['delete'])) {
+    $category_id = (int) $_GET['delete'];
+    $token = $_GET['token'] ?? '';
+    if (!verify_csrf_token($token)) {
+        flash('Token tidak valid.', 'danger');
+        header('Location: categories.php');
+        exit();
+    }
+    // Cek relasi produk
+    $cp = $conn->prepare("SELECT COUNT(*) cnt FROM products WHERE category_id = ? AND user_id = ?");
+    if ($cp) {
+        $cp->bind_param('ii', $category_id, $_SESSION['user_id']);
+        $cp->execute();
+        $r = $cp->get_result()->fetch_assoc();
+        $cp->close();
+        if ($r['cnt'] > 0) {
+            flash('Kategori dipakai produk dan tidak dapat dihapus.', 'warning');
+            header('Location: categories.php');
+            exit();
+        }
+    }
+    $del = $conn->prepare("DELETE FROM categories WHERE id = ? AND user_id = ?");
+    if ($del) {
+        $del->bind_param('ii', $category_id, $_SESSION['user_id']);
+        if ($del->execute())
+            flash('Kategori berhasil dihapus.', 'success');
+        else
+            flash('Gagal menghapus kategori: ' . $del->error, 'danger');
+        $del->close();
+    }
+    header('Location: categories.php');
+    exit();
+}
 
-            if ($category_id > 0) {
-                // Update existing
-                $stmt = $conn->prepare("UPDATE categories SET name = ?, slug = ?, description = ?, color = ?, is_active = ? WHERE id = ? AND user_id = ?");
-                if ($stmt) {
-                    $stmt->bind_param("sssssii", $name, $slug, $description, $color, $is_active, $category_id, $user_id);
-                    if ($stmt->execute()) {
-                        $message = "Kategori berhasil diperbarui!";
+// Handle INSERT/UPDATE
+if ($table_exists && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $category_id = (int) ($_POST['category_id'] ?? 0);
+    $name = trim($_POST['name'] ?? '');
+    $description = trim($_POST['description'] ?? '');
+    $color = trim($_POST['color'] ?? '#007bff');
+    $is_active = isset($_POST['is_active']) ? 1 : 0;
+
+    // CSRF
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        $message = 'Token CSRF tidak valid.';
+        $message_type = 'danger';
+    }
+
+    // Validasi dasar
+    if (!$message) {
+        if ($name === '') {
+            $message = 'Nama kategori harus diisi.';
+        } elseif (!preg_match('/^#[0-9A-Fa-f]{6}$/', $color)) {
+            $message = 'Format warna tidak valid.';
+        }
+    }
+
+    if (!$message) {
+        // Generate slug
+        $base_slug = strtolower(preg_replace('/[^A-Za-z0-9-]+/', '-', $name));
+        $slug = generate_unique_slug($conn, $base_slug, $category_id);
+
+        if ($category_id > 0) {
+            $stmt = $conn->prepare("UPDATE categories SET name = ?, slug = ?, description = ?, color = ?, is_active = ? WHERE id = ? AND user_id = ?");
+            if ($stmt) {
+                $stmt->bind_param('ssssiii', $name, $slug, $description, $color, $is_active, $category_id, $_SESSION['user_id']);
+                if ($stmt->execute()) {
+                    if ($debug) {
+                        $message = 'Kategori berhasil diperbarui (debug).';
                         $message_type = 'success';
                     } else {
-                        $message = "Gagal memperbarui kategori.";
+                        flash('Kategori berhasil diperbarui!', 'success');
+                        header('Location: categories.php');
+                        exit();
                     }
-                    $stmt->close();
+                } else {
+                    $message = 'Gagal memperbarui kategori: ' . $stmt->error;
                 }
+                $stmt->close();
             } else {
-                // Insert new
-                $stmt = $conn->prepare("INSERT INTO categories (user_id, name, slug, description, color, is_active) VALUES (?, ?, ?, ?, ?, ?)");
-                if ($stmt) {
-                    $stmt->bind_param("issssi", $user_id, $name, $slug, $description, $color, $is_active);
-                    if ($stmt->execute()) {
-                        $message = "Kategori berhasil ditambahkan!";
+                $message = 'Prepare UPDATE gagal: ' . $conn->error;
+            }
+        } else {
+            $stmt = $conn->prepare("INSERT INTO categories (user_id, name, slug, description, color, is_active) VALUES (?, ?, ?, ?, ?, ?)");
+            if ($stmt) {
+                $stmt->bind_param('issssi', $_SESSION['user_id'], $name, $slug, $description, $color, $is_active);
+                if ($stmt->execute()) {
+                    if ($debug) {
+                        $message = 'Kategori berhasil ditambahkan (debug).';
                         $message_type = 'success';
                     } else {
-                        $message = "Gagal menambahkan kategori.";
+                        flash('Kategori berhasil ditambahkan!', 'success');
+                        header('Location: categories.php');
+                        exit();
                     }
-                    $stmt->close();
+                } else {
+                    $message = 'Gagal menambahkan kategori: ' . $stmt->error;
                 }
+                $stmt->close();
+            } else {
+                $message = 'Prepare INSERT gagal: ' . $conn->error;
             }
         }
-    } catch (Exception $e) {
-        $message = "Error: " . $e->getMessage();
     }
 }
 
-// Get categories
-$categories_query = $conn->prepare("SELECT * FROM categories WHERE user_id = ? ORDER BY created_at DESC");
-if ($categories_query) {
-    $categories_query->bind_param("i", $user_id);
-    $categories_query->execute();
-    $categories = $categories_query->get_result();
-} else {
-    $categories = null;
+// Ambil daftar kategori
+$categories = null;
+if ($table_exists) {
+    $q = $conn->prepare('SELECT * FROM categories WHERE user_id = ? ORDER BY created_at DESC');
+    if ($q) {
+        $q->bind_param('i', $_SESSION['user_id']);
+        if ($q->execute()) {
+            $categories = $q->get_result();
+        } else if (!$message) {
+            $message = 'Query kategori gagal: ' . $q->error;
+            $message_type = 'danger';
+        }
+        $q->close();
+    } else if (!$message) {
+        $message = 'Prepare query kategori gagal: ' . $conn->error;
+        $message_type = 'danger';
+    }
 }
 ?>
 
@@ -95,6 +205,11 @@ if ($categories_query) {
     <?php if ($message): ?>
         <div class="alert alert-<?php echo $message_type; ?> alert-dismissible fade show" role="alert">
             <?php echo htmlspecialchars($message); ?>
+            <?php if (!$table_exists): ?>
+                <div class="mt-2">
+                    <a href="run_migration.php" class="btn btn-sm btn-outline-primary">Jalankan Migration Categories</a>
+                </div>
+            <?php endif; ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     <?php endif; ?>
@@ -121,8 +236,8 @@ if ($categories_query) {
                                 onclick="editCategory(<?php echo htmlspecialchars(json_encode($category)); ?>)">
                                 <i class="fas fa-edit"></i> Edit
                             </button>
-                            <a href="?delete=<?php echo $category['id']; ?>" class="btn btn-sm btn-danger"
-                                onclick="return confirm('Yakin hapus kategori ini?')">
+                            <a href="?delete=<?php echo $category['id']; ?>&token=<?php echo urlencode(get_csrf_token()); ?>"
+                                class="btn btn-sm btn-danger" onclick="return confirm('Yakin hapus kategori ini?')">
                                 <i class="fas fa-trash"></i> Hapus
                             </a>
                         </div>
@@ -152,6 +267,7 @@ if ($categories_query) {
             <form method="POST">
                 <div class="modal-body">
                     <input type="hidden" id="category_id" name="category_id" value="0">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(get_csrf_token()); ?>">
 
                     <div class="mb-3">
                         <label for="name" class="form-label">Nama Kategori</label>
@@ -207,8 +323,9 @@ if ($categories_query) {
 
     // Reset form when modal is closed
     document.getElementById('categoryModal').addEventListener('hidden.bs.modal', function () {
+        const form = document.querySelector('#categoryModal form');
+        form.reset();
         document.getElementById('category_id').value = 0;
-        document.querySelector('form').reset();
         document.getElementById('color').value = '#007bff';
         document.getElementById('colorPreview').style.backgroundColor = '#007bff';
         document.querySelector('#categoryModalLabel').textContent = 'Tambah/Edit Kategori';

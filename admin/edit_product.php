@@ -3,6 +3,7 @@ $currentPage = 'products';
 $pageTitle = 'Edit Produk';
 require_once 'templates/header.php';
 require_once '../config/utils/FileUploadValidator.php';
+require_once '../config/utils/ImageProcessor.php';
 
 $user_id = $_SESSION['user_id'];
 $message = '';
@@ -63,12 +64,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     if (!$move_result['success']) {
                         $message = $move_result['message'];
                     } else {
-                        // Delete old image if exists and different
+                        // Delete old image & thumbnail if exists and different
                         $old_image_path = $target_dir . $product['image'];
-                        if (!empty($product['image']) && file_exists($old_image_path) && $old_image_path !== $target_file) {
-                            FileUploadValidator::deleteFile($old_image_path);
+                        $old_thumb_path = $target_dir . 'thumbs/' . $product['image'];
+                        if (!empty($product['image']) && $product['image'] !== $new_filename) {
+                            if (file_exists($old_image_path)) {
+                                FileUploadValidator::deleteFile($old_image_path);
+                            }
+                            if (file_exists($old_thumb_path)) {
+                                FileUploadValidator::deleteFile($old_thumb_path);
+                            }
                         }
                         $image = $new_filename;
+                        // Generate thumbnail
+                        $thumb_dir = $target_dir . 'thumbs';
+                        if (!is_dir($thumb_dir)) {
+                            @mkdir($thumb_dir, 0755, true);
+                        }
+                        $thumb_path = $thumb_dir . '/' . $new_filename;
+                        $thumb_result = ImageProcessor::generateSquareThumbnail($target_file, $thumb_path, 400);
+                        if (!$thumb_result['success']) {
+                            $message = empty($message) ? 'Thumbnail gagal dibuat: ' . htmlspecialchars($thumb_result['message']) : $message;
+                        }
                     }
                 }
             }
@@ -164,13 +181,27 @@ if ($categories_query) {
                         </div>
                         <div class="mb-3">
                             <label for="image" class="form-label">Gambar Produk</label>
-                            <?php if ($product['image']): ?>
-                                <div class="mb-2">
-                                    <img src="../assets/uploads/<?php echo htmlspecialchars($product['image']); ?>"
-                                        alt="Current Image" style="max-width: 200px; height: auto;">
-                                    <p class="text-muted small">Gambar saat ini</p>
-                                </div>
-                            <?php endif; ?>
+                            <?php
+                            $placeholder = '../assets/images/placeholder-product.svg';
+                            $uploads_dir = '../assets/uploads/';
+                            $thumbs_dir = $uploads_dir . 'thumbs/';
+                            $currentDisplay = $placeholder;
+                            if (!empty($product['image'])) {
+                                $imgName = $product['image'];
+                                $thumbCandidate = $thumbs_dir . $imgName;
+                                $origCandidate = $uploads_dir . $imgName;
+                                if (file_exists($thumbCandidate)) {
+                                    $currentDisplay = $thumbCandidate;
+                                } elseif (file_exists($origCandidate)) {
+                                    $currentDisplay = $origCandidate;
+                                }
+                            }
+                            ?>
+                            <div class="mb-2">
+                                <img src="<?php echo htmlspecialchars($currentDisplay); ?>" alt="Current Image"
+                                    style="max-width: 200px; height: auto;">
+                                <p class="text-muted small">Gambar saat ini</p>
+                            </div>
                             <input type="file" class="form-control" id="image" name="image" accept="image/*">
                             <small class="text-muted">Biarkan kosong jika tidak ingin mengubah gambar. Maksimal
                                 5MB.</small>

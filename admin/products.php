@@ -267,16 +267,25 @@ if ($categories_query) {
                                 <input type="checkbox" class="form-check-input product-checkbox"
                                     value="<?php echo $product['id']; ?>" onchange="updateBulkSelection()">
                             </div>
-                            <?php if ($product['image']): ?>
-                                <img src="../assets/uploads/<?php echo htmlspecialchars($product['image']); ?>" class="card-img-top"
-                                    alt="<?php echo htmlspecialchars($product['name']); ?>"
-                                    style="height: 200px; object-fit: cover;">
-                            <?php else: ?>
-                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
-                                    style="height: 200px;">
-                                    <span class="text-muted">No Image</span>
-                                </div>
-                            <?php endif; ?>
+                            <?php
+                            $placeholder = '../assets/images/placeholder-product.svg';
+                            $uploads_dir = '../assets/uploads/';
+                            $thumbs_dir = $uploads_dir . 'thumbs/';
+                            $finalPath = $placeholder;
+                            if (!empty($product['image'])) {
+                                $imgName = $product['image'];
+                                $thumbCandidate = $thumbs_dir . $imgName;
+                                $origCandidate = $uploads_dir . $imgName;
+                                if (file_exists($thumbCandidate)) {
+                                    $finalPath = $thumbCandidate;
+                                } elseif (file_exists($origCandidate)) {
+                                    $finalPath = $origCandidate;
+                                }
+                            }
+                            ?>
+                            <img src="<?php echo htmlspecialchars($finalPath); ?>" class="card-img-top"
+                                alt="<?php echo htmlspecialchars($product['name']); ?>"
+                                style="height: 200px; object-fit: cover;">
                             <div class="card-body d-flex flex-column">
                                 <h5 class="card-title"><?php echo htmlspecialchars($product['name']); ?></h5>
                                 <p class="card-text">

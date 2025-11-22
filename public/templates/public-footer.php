@@ -120,6 +120,10 @@
 </button>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Dynamic Product Filter Script -->
+<script src="../assets/js/filter-products.js"></script>
+
 <script>
     // Scroll to Top functionality
     window.addEventListener('scroll', function () {

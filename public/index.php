@@ -63,7 +63,7 @@ $items_per_page = 12;
 $pagination = new Pagination($total_products, $items_per_page, $current_page);
 
 // Get products with pagination
-$products_query_sql = "SELECT products.*, users.store_name FROM products JOIN users ON products.user_id = users.id $where_clause 
+$products_query_sql = "SELECT products.*, users.store_name, users.phone as seller_phone FROM products JOIN users ON products.user_id = users.id $where_clause 
 ORDER BY products.created_at DESC 
 LIMIT ? OFFSET ?";
 
@@ -231,31 +231,36 @@ if ($products_query) {
 
         <!-- Search and Filter Form -->
         <div class="filter-card">
-            <form method="GET" class="row g-3 align-items-end">
+            <form method="GET" action="index.php" id="filter-form" class="row g-3 align-items-end">
                 <div class="col-lg-4 col-md-6">
-                    <label class="form-label fw-semibold">
+                    <label for="search-input" class="form-label fw-semibold">
                         <i class="fas fa-search me-2"></i>Cari Produk
                     </label>
-                    <input type="text" class="form-control" name="search" placeholder="Ketik nama produk..."
-                        value="<?php echo htmlspecialchars($search); ?>">
+                    <input type="text" class="form-control" id="search-input" name="search"
+                        placeholder="Ketik nama produk..." value="<?php echo htmlspecialchars($search); ?>"
+                        aria-label="Cari produk">
                 </div>
                 <div class="col-lg-2 col-md-3">
-                    <label class="form-label fw-semibold">
+                    <label for="min-price-input" class="form-label fw-semibold">
                         <i class="fas fa-money-bill-wave me-2"></i>Harga Min
                     </label>
-                    <input type="number" class="form-control" name="min_price" placeholder="Rp 0" min="0"
-                        value="<?php echo $min_price > 0 ? $min_price : ''; ?>">
+                    <input type="number" class="form-control" id="min-price-input" name="min_price" placeholder="Rp 0"
+                        min="0" step="1000" value="<?php echo $min_price > 0 ? $min_price : ''; ?>"
+                        aria-label="Harga minimum">
                 </div>
                 <div class="col-lg-2 col-md-3">
-                    <label class="form-label fw-semibold">Harga Maks</label>
-                    <input type="number" class="form-control" name="max_price" placeholder="Rp Max" min="0"
-                        value="<?php echo $max_price < 999999999 ? $max_price : ''; ?>">
+                    <label for="max-price-input" class="form-label fw-semibold">
+                        <i class="fas fa-money-bill-wave me-2"></i>Harga Maks
+                    </label>
+                    <input type="number" class="form-control" id="max-price-input" name="max_price" placeholder="Rp Max"
+                        min="0" step="1000" value="<?php echo $max_price < 999999999 ? $max_price : ''; ?>"
+                        aria-label="Harga maksimum">
                 </div>
                 <div class="col-lg-2 col-md-6">
-                    <label class="form-label fw-semibold">
+                    <label for="stock-filter" class="form-label fw-semibold">
                         <i class="fas fa-box me-2"></i>Stok
                     </label>
-                    <select class="form-select" name="stock">
+                    <select class="form-select" id="stock-filter" name="stock" aria-label="Filter stok produk">
                         <option value="">Semua Stok</option>
                         <option value="in_stock" <?php echo $stock_filter === 'in_stock' ? 'selected' : ''; ?>>Ada Stok
                         </option>
@@ -270,24 +275,37 @@ if ($products_query) {
                 </div>
             </form>
             <?php if (!empty($search) || $min_price > 0 || $max_price < 999999999 || !empty($stock_filter)): ?>
-                <div class="mt-3 text-center">
-                    <a href="index.php" class="btn btn-sm btn-outline-secondary">
+                <div class="mt-3 text-center" id="reset-filter-container">
+                    <button type="button" id="reset-filter-btn" class="btn btn-sm btn-outline-secondary">
                         <i class="fas fa-redo me-2"></i>Reset Filter
-                    </a>
+                    </button>
+                </div>
+            <?php else: ?>
+                <div class="mt-3 text-center" id="reset-filter-container" style="display: none;">
+                    <button type="button" id="reset-filter-btn" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-redo me-2"></i>Reset Filter
+                    </button>
                 </div>
             <?php endif; ?>
         </div>
 
         <?php if ($total_products > 0): ?>
             <div class="text-center mb-4">
-                <span class="badge bg-primary" style="font-size: 1rem; padding: 0.75rem 1.5rem; border-radius: 50px;">
+                <span id="product-count-badge" class="badge bg-primary"
+                    style="font-size: 1rem; padding: 0.75rem 1.5rem; border-radius: 50px;">
                     Menampilkan <?php echo $pagination->getStartItem(); ?> - <?php echo $pagination->getEndItem(); ?> dari
                     <strong><?php echo $total_products; ?></strong> produk
                 </span>
             </div>
+        <?php else: ?>
+            <div class="text-center mb-4">
+                <span id="product-count-badge" class="badge bg-primary"
+                    style="font-size: 1rem; padding: 0.75rem 1.5rem; border-radius: 50px; display: none;">
+                </span>
+            </div>
         <?php endif; ?>
 
-        <div class="row g-4">
+        <div class="row g-4" id="products-container">
             <?php if ($products && $products->num_rows > 0): ?>
                 <?php while ($product = $products->fetch_assoc()): ?>
                     <div class="col-lg-4 col-md-6">
@@ -296,16 +314,26 @@ if ($products_query) {
                                 <span class="badge-new">Stok Terbatas!</span>
                             <?php endif; ?>
 
-                            <?php if ($product['image']): ?>
-                                <img src="../assets/uploads/<?php echo htmlspecialchars($product['image']); ?>" class="card-img-top"
-                                    alt="<?php echo htmlspecialchars($product['name']); ?>"
-                                    style="height: 260px; object-fit: cover;">
-                            <?php else: ?>
-                                <div class="card-img-top d-flex align-items-center justify-content-center"
-                                    style="height: 260px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                                    <i class="fas fa-image text-white" style="font-size: 4rem; opacity: 0.5;"></i>
-                                </div>
-                            <?php endif; ?>
+                            <?php
+                            // Determine image to display with fallback chain
+                            $image_src = '../assets/images/placeholder-product.svg'; // Default placeholder
+                    
+                            if (!empty($product['image'])) {
+                                // Check if thumbnail exists
+                                $thumb_path = '../assets/uploads/thumbs/' . $product['image'];
+                                $original_path = '../assets/uploads/' . $product['image'];
+
+                                if (file_exists(__DIR__ . '/' . $thumb_path)) {
+                                    $image_src = $thumb_path;
+                                } elseif (file_exists(__DIR__ . '/' . $original_path)) {
+                                    $image_src = $original_path;
+                                }
+                            }
+                            ?>
+                            <img src="<?php echo htmlspecialchars($image_src); ?>" class="card-img-top"
+                                alt="<?php echo htmlspecialchars($product['name']); ?>"
+                                style="height: 260px; object-fit: cover;"
+                                onerror="this.onerror=null; this.src='../assets/images/placeholder-product.svg';">
 
                             <div class="card-body d-flex flex-column">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
@@ -337,8 +365,17 @@ if ($products_query) {
                                         class="btn btn-primary flex-grow-1">
                                         <i class="fas fa-eye me-2"></i>Detail
                                     </a>
-                                    <a href="https://wa.me/<?php echo $user['phone'] ?? '628123456789'; ?>?text=Halo,%20saya%20tertarik%20dengan%20produk%20<?php echo urlencode($product['name']); ?>%20dengan%20harga%20Rp%20<?php echo number_format($product['price'], 0, ',', '.'); ?>"
-                                        class="btn whatsapp-btn" target="_blank" title="Chat via WhatsApp">
+                                    <?php
+                                    // Format phone number for WhatsApp (remove leading 0, add 62)
+                                    $whatsapp_phone = !empty($product['seller_phone']) ? $product['seller_phone'] : '628123456789';
+                                    if (substr($whatsapp_phone, 0, 1) === '0') {
+                                        $whatsapp_phone = '62' . substr($whatsapp_phone, 1);
+                                    }
+                                    $whatsapp_message = "Halo, saya tertarik dengan produk *" . $product['name'] . "* dengan harga Rp " . number_format($product['price'], 0, ',', '.');
+                                    ?>
+                                    <a href="https://wa.me/<?php echo htmlspecialchars($whatsapp_phone); ?>?text=<?php echo urlencode($whatsapp_message); ?>"
+                                        class="btn whatsapp-btn" target="_blank" rel="noopener noreferrer"
+                                        title="Chat via WhatsApp">
                                         <i class="fab fa-whatsapp"></i>
                                     </a>
                                 </div>
@@ -361,7 +398,7 @@ if ($products_query) {
         </div>
 
         <?php if ($products && $pagination->getTotalPages() > 1): ?>
-            <div class="mt-4">
+            <div class="mt-4" id="pagination-container">
                 <?php
                 $extra_params = [];
                 if (!empty($search))
@@ -375,6 +412,8 @@ if ($products_query) {
                 echo $pagination->render('index.php', 'page', $extra_params);
                 ?>
             </div>
+        <?php else: ?>
+            <div class="mt-4" id="pagination-container"></div>
         <?php endif; ?>
     </div>
 </section>
@@ -410,7 +449,7 @@ if ($products_query) {
                         </div>
                         <div>
                             <small class="d-block text-muted">Email</small>
-                            <strong style="font-size: 1rem;">gujestokjondrywelay@gmail.com</strong>
+                            <strong style="font-size: 1rem;">DagangIN@gmail.com</strong>
                         </div>
                     </div>
 
@@ -420,7 +459,7 @@ if ($products_query) {
                         </div>
                         <div>
                             <small class="d-block text-muted">Alamat</small>
-                            <strong style="font-size: 1.1rem;">UKIM, Makassar</strong>
+                            <strong style="font-size: 1.1rem;">UKIM, Ambon</strong>
                         </div>
                     </div>
 

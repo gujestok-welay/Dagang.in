@@ -17,7 +17,7 @@ if ($conn->connect_error) {
 $conn->set_charset("utf8");
 
 // Define base paths
-define('BASE_URL', 'http://localhost/dagang.in');
+define('BASE_URL', 'http://10.219.68.9/dagang.in');
 define('BASE_PATH', dirname(dirname(dirname(__FILE__))));
 define('PUBLIC_PATH', BASE_PATH . '/public');
 define('ADMIN_PATH', BASE_PATH . '/admin');

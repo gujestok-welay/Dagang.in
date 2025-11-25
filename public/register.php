@@ -162,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <h3 class="regis-cta-title">Sudah Punya Akun?</h3>
                                 <p class="regis-cta-text">Masuk di sini untuk mengakses dasbor dan semua fitur Anda.
                                 </p>
-                                <a href="../public/login.php" class="btn regis-cta-btn">MASUK 🙌</a>
+                                <a href="login.php" class="btn regis-cta-btn">MASUK 🙌</a>
                             </div>
                         </div>
                     </div>
@@ -253,7 +253,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Auto-redirect after successful registration
         <?php if ($message_type === 'success'): ?>
             setTimeout(function () {
-                window.location.href = '../public/login.php';
+                window.location.href = 'login.php';
             }, 3000);
         <?php endif; ?>
     </script>

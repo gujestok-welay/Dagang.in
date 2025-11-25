@@ -4,7 +4,7 @@ session_start();
 
 // Cek apakah user sudah login
 if (!isset($_SESSION['user_id'])) {
-    header('Location: ../login.php');
+    header('Location: ../public/login.php');
     exit;
 }
 
@@ -45,12 +45,18 @@ function exportToCSV()
                 o.created_at,
                 o.updated_at
               FROM orders o
-              LEFT JOIN order_products op ON o.id = op.order_id
+              LEFT JOIN order_items op ON o.id = op.order_id
               WHERE o.user_id = ?
               GROUP BY o.id
               ORDER BY o.created_at DESC";
 
     $stmt = $conn->prepare($query);
+    if (!$stmt) {
+        header('Content-Type: text/plain; charset=utf-8');
+        http_response_code(500);
+        echo "SQL Prepare failed: " . $conn->error;
+        exit;
+    }
     $stmt->bind_param('i', $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -111,23 +117,29 @@ function exportToExcel()
 
     // Query untuk mendapatkan semua order user
     $query = "SELECT 
-                o.id,
-                o.customer_name,
-                o.customer_email,
-                o.customer_phone,
-                o.total,
-                o.status,
-                COUNT(op.id) as total_items,
-                SUM(op.quantity) as total_quantity,
-                o.created_at,
-                o.updated_at
-              FROM orders o
-              LEFT JOIN order_products op ON o.id = op.order_id
-              WHERE o.user_id = ?
-              GROUP BY o.id
-              ORDER BY o.created_at DESC";
+                                o.id,
+                                c.name AS customer_name,
+                                c.email AS customer_email,
+                                c.phone AS customer_phone,
+                                o.total,
+                                o.status,
+                                COUNT(op.id) as total_items,
+                                SUM(op.quantity) as total_quantity,
+                                o.created_at
+                            FROM orders o
+                            LEFT JOIN customers c ON o.customer_id = c.id
+                            LEFT JOIN order_items op ON o.id = op.order_id
+                            WHERE o.user_id = ?
+                            GROUP BY o.id
+                            ORDER BY o.created_at DESC";
 
     $stmt = $conn->prepare($query);
+    if (!$stmt) {
+        header('Content-Type: text/plain; charset=utf-8');
+        http_response_code(500);
+        echo "SQL Prepare failed: " . $conn->error;
+        exit;
+    }
     $stmt->bind_param('i', $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -157,8 +169,7 @@ function exportToExcel()
             $row['total_quantity'],
             'Rp ' . number_format($row['total'], 2, ',', '.'),
             $status_label,
-            date('d-m-Y H:i', strtotime($row['created_at'])),
-            date('d-m-Y H:i', strtotime($row['updated_at']))
+            date('d-m-Y H:i', strtotime($row['created_at']))
         ];
     }
 

@@ -7,7 +7,7 @@ if (isset($_GET['logout'])) {
 }
 
 if (!isLoggedIn()) {
-    header("Location: ../login.php");
+    header("Location: ../public/login.php");
     exit();
 }
 

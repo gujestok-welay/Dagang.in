@@ -49,7 +49,7 @@
                         </a>
                     </li>
                     <li class="mb-2">
-                        <a href="<?php echo BASE_URL; ?>/login.php"
+                        <a href="<?php echo BASE_URL; ?>/public/login.php"
                             style="color: rgba(255,255,255,0.8); text-decoration: none; transition: all 0.3s;">
                             <i class="fas fa-chevron-right me-2" style="font-size: 0.8rem;"></i>Login Admin
                         </a>

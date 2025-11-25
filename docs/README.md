@@ -71,8 +71,8 @@ dagang.in/
 ├── uploads/               # Product images
 ├── images/                # Static images
 ├── public/index.php       # Public storefront
-├── login.php              # Admin login
-├── register.php           # Admin registration
+├── public/login.php              # Admin login
+├── public/register.php           # Admin registration
 ├── dashboard.php          # Admin dashboard
 ├── products.php           # Product management
 ├── add_product.php        # Add new product
@@ -118,7 +118,7 @@ dagang.in/
 
 5. **Akses Aplikasi**
    - Frontend Toko: http://localhost/dagang.in/
-   - Admin Login: http://localhost/dagang.in/login.php
+   - Admin Login: http://localhost/dagang.in/public/login.php
 
 ### Akun Default
 

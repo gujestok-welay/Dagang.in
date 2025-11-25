@@ -4,7 +4,7 @@ session_start();
 
 // Cek apakah user sudah login
 if (!isset($_SESSION['user_id'])) {
-    header('Location: ../login.php');
+    header('Location: ../public/login.php');
     exit;
 }
 
@@ -34,20 +34,25 @@ function exportToCSV()
 
     // Query untuk mendapatkan semua produk user
     $query = "SELECT 
-                p.id,
-                p.name,
-                c.name as category,
-                p.description,
-                p.price,
-                p.stock,
-                p.created_at,
-                p.updated_at
-              FROM products p
-              LEFT JOIN categories c ON p.category_id = c.id
-              WHERE p.user_id = ?
-              ORDER BY p.created_at DESC";
+                                p.id,
+                                p.name,
+                                c.name as category,
+                                p.description,
+                                p.price,
+                                p.stock,
+                                p.created_at
+                            FROM products p
+                            LEFT JOIN categories c ON p.category_id = c.id
+                            WHERE p.user_id = ?
+                            ORDER BY p.created_at DESC";
 
     $stmt = $conn->prepare($query);
+    if (!$stmt) {
+        header('Content-Type: text/plain; charset=utf-8');
+        http_response_code(500);
+        echo "SQL Prepare failed: " . $conn->error;
+        exit;
+    }
     $stmt->bind_param('i', $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -95,27 +100,32 @@ function exportToExcel()
 
     // Query untuk mendapatkan semua produk user
     $query = "SELECT 
-                p.id,
-                p.name,
-                c.name as category,
-                p.description,
-                p.price,
-                p.stock,
-                p.created_at,
-                p.updated_at
-              FROM products p
-              LEFT JOIN categories c ON p.category_id = c.id
-              WHERE p.user_id = ?
-              ORDER BY p.created_at DESC";
+                                p.id,
+                                p.name,
+                                c.name as category,
+                                p.description,
+                                p.price,
+                                p.stock,
+                                p.created_at
+                            FROM products p
+                            LEFT JOIN categories c ON p.category_id = c.id
+                            WHERE p.user_id = ?
+                            ORDER BY p.created_at DESC";
 
     $stmt = $conn->prepare($query);
+    if (!$stmt) {
+        header('Content-Type: text/plain; charset=utf-8');
+        http_response_code(500);
+        echo "SQL Prepare failed: " . $conn->error;
+        exit;
+    }
     $stmt->bind_param('i', $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
 
     // Collect data
     $data = [];
-    $data[] = ['ID', 'Nama Produk', 'Kategori', 'Deskripsi', 'Harga', 'Stok', 'Dibuat', 'Diupdate'];
+    $data[] = ['ID', 'Nama Produk', 'Kategori', 'Deskripsi', 'Harga', 'Stok', 'Dibuat'];
 
     while ($row = $result->fetch_assoc()) {
         $data[] = [
@@ -125,8 +135,7 @@ function exportToExcel()
             $row['description'],
             $row['price'],
             $row['stock'],
-            date('d-m-Y H:i', strtotime($row['created_at'])),
-            date('d-m-Y H:i', strtotime($row['updated_at']))
+            date('d-m-Y H:i', strtotime($row['created_at']))
         ];
     }
 

@@ -1,8 +1,8 @@
 <?php
-require_once 'config/includes/auth.php';
+require_once '../config/includes/auth.php';
 
 if (isLoggedIn()) {
-    header("Location: admin/dashboard.php");
+    header("Location: ../admin/dashboard.php");
     exit();
 }
 
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (login($username, $password)) {
             // Reset attempts on successful login
             $_SESSION['login_attempts'] = 0;
-            header("Location: admin/dashboard.php");
+            header("Location: ../admin/dashboard.php");
             exit();
         } else {
             $_SESSION['login_attempts']++;
@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="assets/css/login.css" rel="stylesheet">
+    <link href="../assets/css/login.css" rel="stylesheet">
 </head>
 
 <body class="login-bg">
@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <p class="login-cta-text">Jangan ketinggalan! Bergabunglah dengan ribuan sahabat UMKM
                                     lainnya yang telah berkembang bersama kami.
                                 </p>
-                                <a href="admin/register.php" class="btn login-cta-btn">BERGABUNG 🙌</a>
+                                <a href="register.php" class="btn login-cta-btn">BERGABUNG 🙌</a>
                             </div>
                         </div>
                     </div>

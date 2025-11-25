@@ -62,7 +62,7 @@ $store_name = defined('STORE_NAME') ? STORE_NAME : 'Dagang.in';
                         <a class="nav-link" href="#contact">Kontak</a>
                     </li>
                 </ul>
-                <a href="<?php echo BASE_URL; ?>/login.php" class="btn btn-accent">Login Admin</a>
+                <a href="<?php echo BASE_URL; ?>/public/login.php" class="btn btn-accent">Login Admin</a>
             </div>
         </div>
     </nav>

@@ -4,7 +4,7 @@ session_start();
 
 // Cek apakah user sudah login dan admin
 if (!isset($_SESSION['user_id'])) {
-    header('Location: ../login.php');
+    header('Location: ../public/login.php');
     exit;
 }
 

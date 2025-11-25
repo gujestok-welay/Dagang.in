@@ -1,3 +1,38 @@
+### Session: 24-25 Nov 2025
+
+#### Troubleshooting & Bugfix: Export, BASE_URL, PHP Built-in Server
+
+- **Bug Fixed**: Fatal error `bind_param()` pada export produk & orders karena prepare gagal (query salah/kolom tidak ada)
+- **Bug Fixed**: SQL error kolom `updated_at` tidak ditemukan di tabel `products` dan `orders` (sudah dihapus dari query dan output)
+- **Bug Fixed**: Query export orders, field customer diambil dari tabel `customers` (LEFT JOIN), bukan dari tabel `orders`
+- **Bug Fixed**: Query export orders, LEFT JOIN ke `order_items` (bukan `order_products`)
+- **Enhancement**: Error handling pada SQL prepare, tampilkan pesan error SQL jika gagal
+- **Config Update**: Ubah `BASE_URL` di config.php dari `localhost` ke IP server (`10.219.68.9`) agar resource & redirect benar saat diakses dari HP
+- **Note**: Jika akses dari HP hanya HTML tanpa CSS/JS, pastikan path resource absolut dan `BASE_URL` sudah benar
+- **Note**: Jika login redirect ke localhost, cek dan update semua penggunaan `BASE_URL`
+- **Files Modified**:
+  - `admin/export_products.php`
+  - `admin/export_orders.php`
+  - `config/includes/config.php`
+
+### Session: 24 Nov 2025
+
+#### 6. Migrasi & Penyesuaian Login/Register
+
+- **Refactor**: Memindahkan file `login.php` dan `register.php` ke folder `public/` untuk konsistensi struktur dan keamanan.
+- **Update Link**: Memperbarui seluruh link dan redirect yang mengarah ke `login.php` dan `register.php` di seluruh aplikasi agar sesuai dengan lokasi baru.
+- **Fix Header**: Memperbaiki link Login Admin pada header agar mengarah ke `/public/login.php` sesuai URL aplikasi.
+- **Fix Register**: Memperbaiki link dan redirect pada register agar login mengarah ke file yang benar.
+- **Analisis Error**: Melakukan analisis dan pengecekan error setelah pemindahan file, serta memastikan aplikasi berjalan normal.
+- **Files Modified**:
+  - `public/login.php`
+  - `public/register.php`
+  - `public/templates/public-header.php`
+  - `public/templates/public-footer.php`
+  - `docs/README.md`
+  - `docs/TODO.md`
+  - `assets/css/register.css`
+
 # TODO & Progress Tracking
 
 ## Completed ✅

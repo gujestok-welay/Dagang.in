@@ -67,13 +67,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div class="col-md-6 login-left">
                             <div class="login-body">
                                 <h3 class="login-title">MASUK</h3>
-                                <div class="social-login">
+                                <div class="social-login justify-content-center">
                                     <button class="social-btn-login" disabled title="Segera Hadir"><i
                                             class="fab fa-google"></i></button>
-                                    <button class="social-btn-login" disabled title="Segera Hadir"><i
-                                            class="fab fa-github"></i></button>
-                                    <button class="social-btn-login" disabled title="Segera Hadir"><i
-                                            class="fab fa-linkedin"></i></button>
                                     <button class="social-btn-login" disabled title="Segera Hadir"><i
                                             class="fab fa-facebook"></i></button>
                                 </div>
@@ -105,8 +101,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                             name="password" autocomplete="current-password" required>
                                     </div>
                                     <div class="forgot-password">
-                                        <span class="forgot-link" style="opacity: 0.6; cursor: not-allowed;"
-                                            title="Fitur segera hadir">Lupa Kata Sandi?</span>
+                                        <a class="forgot-link"
+                                            href="https://wa.me/6282197771318?text=Halo+Admin+Dagang.in%2C+saya+lupa+password+akun+saya"
+                                            target="_blank" rel="noopener">Lupa Kata Sandi?</a>
                                     </div>
                                     <button type="submit" class="btn login-btn w-100">MASUK</button>
                                 </form>

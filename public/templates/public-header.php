@@ -24,7 +24,7 @@ $store_name = defined('STORE_NAME') ? STORE_NAME : 'Dagang.in';
     <meta property="og:type" content="website">
     <meta property="og:image" content="<?php echo BASE_URL; ?>/assets/images/log.png">
 
-    <title><?php echo htmlspecialchars($store_name); ?> - Platform UMKM Indonesia</title>
+    <title><?php echo htmlspecialchars($store_name); ?> - Platform UMKM Lokal</title>
 
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

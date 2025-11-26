@@ -95,13 +95,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <div class="col-md-6">
                         <label for="store_name" class="form-label">Nama Toko</label>
                         <input type="text" class="form-control form-control-lg" id="store_name" name="store_name"
-                            required
+                            required autocomplete="organization"
                             value="<?php echo isset($_POST['store_name']) ? htmlspecialchars($_POST['store_name']) : ''; ?>">
                     </div>
                     <div class="col-md-6">
                         <label for="phone" class="form-label">No. Telepon</label>
                         <input type="tel" class="form-control form-control-lg" id="phone" name="phone"
-                            pattern="[0-9]{10,15}" placeholder="08123456789" required
+                            pattern="[0-9]{10,15}" placeholder="08123456789" required autocomplete="tel"
                             value="<?php echo isset($_POST['phone']) ? htmlspecialchars($_POST['phone']) : ''; ?>">
                         <small class="text-muted">Format: 08xxxxxxxxxx</small>
                     </div>
@@ -109,26 +109,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div class="mt-3">
                     <label for="username" class="form-label">Username</label>
                     <input type="text" class="form-control form-control-lg" id="username" name="username" minlength="3"
-                        required
+                        required autocomplete="username"
                         value="<?php echo isset($_POST['username']) ? htmlspecialchars($_POST['username']) : ''; ?>">
                     <small class="text-muted">Min. 3 karakter</small>
                 </div>
                 <div class="mt-3">
                     <label for="email" class="form-label">Email</label>
                     <input type="email" class="form-control form-control-lg" id="email" name="email" required
+                        autocomplete="email"
                         value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
                 </div>
                 <div class="row g-3 mt-1">
-                    <div class="col-md-6">
+                    <div class="col-md-6 position-relative">
                         <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control form-control-lg" id="password" name="password"
-                            minlength="6" required autocomplete="new-password">
+                        <div class="input-group">
+                            <input type="password" class="form-control form-control-lg" id="password" name="password"
+                                minlength="6" required autocomplete="new-password">
+                            <button class="btn btn-outline-secondary toggle-password" type="button" tabindex="-1"
+                                data-target="#password" aria-label="Tampilkan Password">
+                                <i class="fa fa-eye"></i>
+                            </button>
+                        </div>
                         <small class="text-muted">Min. 6 karakter</small>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-6 position-relative">
                         <label for="confirm_password" class="form-label">Konfirmasi Password</label>
-                        <input type="password" class="form-control form-control-lg" id="confirm_password"
-                            name="confirm_password" minlength="6" required autocomplete="new-password">
+                        <div class="input-group">
+                            <input type="password" class="form-control form-control-lg" id="confirm_password"
+                                name="confirm_password" minlength="6" required autocomplete="new-password">
+                            <button class="btn btn-outline-secondary toggle-password" type="button" tabindex="-1"
+                                data-target="#confirm_password" aria-label="Tampilkan Password">
+                                <i class="fa fa-eye"></i>
+                            </button>
+                        </div>
                         <small id="password-match" class="text-muted"></small>
                     </div>
                 </div>
@@ -142,7 +155,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/register.js"></script>
+    <?php if ($message_type === 'success'): ?>
+        <script>var registrationSuccess = true;</script>
+    <?php endif; ?>
+    <script src="../assets/js/register.js"></script>
+    <script>
+        // Toggle visibility password
+        document.querySelectorAll('.toggle-password').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var target = document.querySelector(this.getAttribute('data-target'));
+                if (target.type === 'password') {
+                    target.type = 'text';
+                    this.querySelector('i').classList.remove('fa-eye');
+                    this.querySelector('i').classList.add('fa-eye-slash');
+                } else {
+                    target.type = 'password';
+                    this.querySelector('i').classList.remove('fa-eye-slash');
+                    this.querySelector('i').classList.add('fa-eye');
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

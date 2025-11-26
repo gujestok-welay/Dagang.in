@@ -34,10 +34,15 @@ form.addEventListener("submit", function (e) {
 });
 // Auto-redirect setelah registrasi sukses
 // Pastikan kode di bawah ini hanya dieksekusi jika registrasi sukses
-if (
-  typeof registrationSuccess !== "undefined" &&
-  registrationSuccess === true
-) {
+console.log(
+  "registrationSuccess:",
+  typeof registrationSuccess,
+  registrationSuccess
+);
+if (typeof registrationSuccess === "undefined") {
+  var registrationSuccess = false;
+}
+if (registrationSuccess === true) {
   setTimeout(function () {
     window.location.href = "login.php";
   }, 3000);

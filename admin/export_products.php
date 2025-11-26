@@ -43,7 +43,7 @@ function exportToCSV()
                                 p.created_at
                             FROM products p
                             LEFT JOIN categories c ON p.category_id = c.id
-                            WHERE p.user_id = ?
+                            WHERE p.user_id = ? AND p.is_deleted = 0
                             ORDER BY p.created_at DESC";
 
     $stmt = $conn->prepare($query);

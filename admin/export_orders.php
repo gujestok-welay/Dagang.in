@@ -32,23 +32,23 @@ function exportToCSV()
 
     $user_id = $_SESSION['user_id'];
 
-    // Query untuk mendapatkan semua order user
+    // Query untuk mendapatkan semua order user (JOIN ke customers)
     $query = "SELECT 
-                o.id,
-                o.customer_name,
-                o.customer_email,
-                o.customer_phone,
-                o.total,
-                o.status,
-                COUNT(op.id) as total_items,
-                SUM(op.quantity) as total_quantity,
-                o.created_at,
-                o.updated_at
-              FROM orders o
-              LEFT JOIN order_items op ON o.id = op.order_id
-              WHERE o.user_id = ?
-              GROUP BY o.id
-              ORDER BY o.created_at DESC";
+                                o.id,
+                                c.name AS customer_name,
+                                c.email AS customer_email,
+                                c.phone AS customer_phone,
+                                o.total,
+                                o.status,
+                                COUNT(op.id) as total_items,
+                                SUM(op.quantity) as total_quantity,
+                                o.created_at
+                            FROM orders o
+                            LEFT JOIN customers c ON o.customer_id = c.id
+                            LEFT JOIN order_items op ON o.id = op.order_id
+                            WHERE o.user_id = ?
+                            GROUP BY o.id
+                            ORDER BY o.created_at DESC";
 
     $stmt = $conn->prepare($query);
     if (!$stmt) {
@@ -72,7 +72,7 @@ function exportToCSV()
     fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
     // Tulis header kolom
-    fputcsv($output, ['ID', 'Nama Pelanggan', 'Email', 'Telepon', 'Total Item', 'Total Qty', 'Total Harga', 'Status', 'Dibuat', 'Diupdate'], ',');
+    fputcsv($output, ['ID', 'Nama Pelanggan', 'Email', 'Telepon', 'Total Item', 'Total Qty', 'Total Harga', 'Status', 'Dibuat'], ',');
 
     // Status mapping untuk tampilan
     $status_labels = [
@@ -96,8 +96,7 @@ function exportToCSV()
             $row['total_quantity'],
             'Rp ' . number_format($row['total'], 2, ',', '.'),
             $status_label,
-            date('d-m-Y H:i', strtotime($row['created_at'])),
-            date('d-m-Y H:i', strtotime($row['updated_at']))
+            date('d-m-Y H:i', strtotime($row['created_at']))
         ], ',');
     }
 

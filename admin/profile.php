@@ -1,7 +1,25 @@
 <?php
 $currentPage = 'profile';
 $pageTitle = 'Profil Toko';
+
 require_once 'templates/header.php';
+
+// CSRF helpers (copy dari categories.php)
+if (!function_exists('get_csrf_token')) {
+    function get_csrf_token()
+    {
+        if (empty($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION['csrf_token'];
+    }
+}
+if (!function_exists('verify_csrf_token')) {
+    function verify_csrf_token($token)
+    {
+        return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
+    }
+}
 
 $user_id = $_SESSION['user_id'];
 $message = '';
@@ -15,6 +33,9 @@ $user = $user_result->fetch_assoc();
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        die("Akses ilegal: Token CSRF tidak valid.");
+    }
     if (isset($_POST['update_profile'])) {
         $store_name = trim($_POST['store_name']);
         $email = trim($_POST['email']);
@@ -118,7 +139,8 @@ $stats = $stats_query->get_result()->fetch_assoc();
                         <div class="col-md-3">
                             <div class="p-3">
                                 <h3 class="text-success">Rp
-                                    <?php echo number_format($stats['total_revenue'] ?? 0, 0, ',', '.'); ?></h3>
+                                    <?php echo number_format($stats['total_revenue'] ?? 0, 0, ',', '.'); ?>
+                                </h3>
                                 <p class="text-muted">Total Pendapatan</p>
                             </div>
                         </div>
@@ -141,6 +163,8 @@ $stats = $stats_query->get_result()->fetch_assoc();
                 </div>
                 <div class="card-body">
                     <form method="POST">
+                        <input type="hidden" name="csrf_token"
+                            value="<?php echo htmlspecialchars(get_csrf_token()); ?>">
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
                             <input type="text" class="form-control" id="username"
@@ -183,6 +207,8 @@ $stats = $stats_query->get_result()->fetch_assoc();
                 </div>
                 <div class="card-body">
                     <form method="POST">
+                        <input type="hidden" name="csrf_token"
+                            value="<?php echo htmlspecialchars(get_csrf_token()); ?>">
                         <div class="mb-3">
                             <label for="current_password" class="form-label">Password Saat Ini</label>
                             <input type="password" class="form-control" id="current_password" name="current_password"

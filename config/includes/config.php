@@ -26,9 +26,13 @@ define('CONFIG_PATH', BASE_PATH . '/config');
 define('DATABASE_PATH', BASE_PATH . '/database');
 define('TESTS_PATH', BASE_PATH . '/tests');
 
+
 // Store configuration
 define('STORE_NAME', 'Dagang.in');
 define('STORE_DESCRIPTION', 'Platform Toko Online Terpercaya');
+
+// Super Admin Email (untuk validasi penting, referensi ke depan)
+define('SUPER_ADMIN_EMAIL', 'admin@dagang.in');
 
 // CDN Assets - untuk konsistensi di semua template
 define('BOOTSTRAP_CSS', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');

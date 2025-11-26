@@ -54,9 +54,12 @@
 }
 
 body {
-  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
-  padding-top: 85px;
+  /* NAIKKAN DARI 85px JADI 120px */
+  /* Agar ada jarak napas yang lega antara navbar dan konten */
+  padding-top: 120px !important;
+  
+  /* Settingan lama biarkan tetap ada */
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background-color: var(--bg-light);
   color: var(--text-dark);
   line-height: 1.6;
@@ -694,69 +697,18 @@ body {
 
 /* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 768px) {
-  .hero-title {
-    font-size: 2rem;
-  }
-  .hero-subtitle {
-    font-size: 1rem;
-  }
-  .hero-section {
-    min-height: auto;
-    padding: 40px 0 20px;
-  }
-  .section-title {
-    font-size: 1.3rem;
-  }
-  .stat-number {
-    font-size: 1.5rem;
-  }
-  .product-card, .feature-card, .filter-card, .contact-info-card {
-    margin-bottom: 1rem;
-    padding: 1rem;
-    border-radius: 12px;
-    max-width: 100vw;
-    min-width: 0;
-  }
-  .filter-card .form-label {
-    font-size: 0.85rem;
-    margin-bottom: 0.4rem;
-  }
-  .filter-card .btn {
-    margin-top: 0.7rem;
-  }
-  .footer {
-    padding: 30px 0 10px;
-  }
   body {
-    padding-top: 60px;
+    /* NAIKKAN DARI 60px JADI 110px */
+    padding-top: 110px !important;
   }
 }
 
+/* 3. Mobile Portrait (< 576px) */
 @media (max-width: 576px) {
-  .filter-card, .feature-card, .contact-info-card {
-    padding: 0.6rem;
-    border-radius: 8px;
-    margin-bottom: 0.7rem;
-  }
-  .filter-card .form-control,
-  .filter-card .form-select {
-    font-size: 0.85rem;
-    padding: 0.5rem 0.6rem;
-  }
-  .hero-title {
-    font-size: 1.2rem;
-  }
-  .section-title {
-    font-size: 1rem;
-  }
-  .stat-number {
-    font-size: 1.1rem;
-  }
-  .footer {
-    padding: 18px 0 6px;
-  }
   body {
-    padding-top: 45px;
+    /* NAIKKAN DARI 45px JADI 100px */
+    /* Navbar di HP tetap tebal karena ada Logo + Tombol Hamburger Menu */
+    padding-top: 100px !important;
   }
 }
 

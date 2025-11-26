@@ -1,14 +1,32 @@
 <?php
 $currentPage = 'products';
 $pageTitle = 'Manajemen Produk';
+
 require_once 'templates/header.php';
 require_once '../config/utils/Pagination.php';
+
+// CSRF helpers (copy dari categories.php jika belum ada)
+if (!function_exists('get_csrf_token')) {
+    function get_csrf_token()
+    {
+        if (empty($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION['csrf_token'];
+    }
+}
+if (!function_exists('verify_csrf_token')) {
+    function verify_csrf_token($token)
+    {
+        return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
+    }
+}
 
 $user_id = $_SESSION['user_id'];
 $message = '';
 $message_type = 'danger';
 
-// Handle bulk actions
+// Handle bulk actions (Soft Delete)
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $action = $_POST['bulk_action'] ?? '';
     $selected_ids = $_POST['selected_products'] ?? [];
@@ -18,20 +36,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if ($action === 'delete') {
             try {
+                // Soft delete: update is_deleted = 1
                 $ids_str = implode(',', $selected_ids);
-                $delete_stmt = $conn->prepare("DELETE FROM products WHERE id IN (" . str_repeat('?,', count($selected_ids) - 1) . "?) AND user_id = ?");
-
+                $update_stmt = $conn->prepare("UPDATE products SET is_deleted = 1 WHERE id IN (" . str_repeat('?,', count($selected_ids) - 1) . "?) AND user_id = ?");
                 $params = array_merge($selected_ids, [$user_id]);
                 $param_types = str_repeat('i', count($selected_ids) + 1);
-                $delete_stmt->bind_param($param_types, ...$params);
+                $update_stmt->bind_param($param_types, ...$params);
 
-                if ($delete_stmt->execute()) {
-                    $message = "Berhasil menghapus " . count($selected_ids) . " produk!";
+                if ($update_stmt->execute()) {
+                    $message = "Produk berhasil diarsipkan (Soft Delete).";
                     $message_type = 'success';
                 } else {
-                    $message = "Gagal menghapus produk.";
+                    $message = "Gagal mengarsipkan produk.";
                 }
-                $delete_stmt->close();
+                $update_stmt->close();
             } catch (Exception $e) {
                 $message = "Error: " . $e->getMessage();
             }
@@ -41,17 +59,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Handle single delete
+// Handle single delete (Soft Delete, tanpa hapus file)
 if (isset($_GET['delete'])) {
     $product_id = (int) $_GET['delete'];
-    $delete_stmt = $conn->prepare("DELETE FROM products WHERE id = ? AND user_id = ?");
-    if ($delete_stmt) {
-        $delete_stmt->bind_param("ii", $product_id, $user_id);
-        $delete_stmt->execute();
-        $delete_stmt->close();
+    $token = $_GET['token'] ?? '';
+    if (!verify_csrf_token($token)) {
+        die('Token CSRF tidak valid.');
     }
-    header("Location: products.php");
-    exit();
+
+    // Soft delete: update is_deleted = 1
+    $update_stmt = $conn->prepare("UPDATE products SET is_deleted = 1 WHERE id = ? AND user_id = ?");
+    $update_success = false;
+    if ($update_stmt) {
+        $update_stmt->bind_param("ii", $product_id, $user_id);
+        $update_success = $update_stmt->execute();
+        $update_stmt->close();
+    }
+
+    if ($update_success) {
+        // Redirect dengan pesan sukses
+        header("Location: products.php?msg=softdeleted");
+        exit();
+    } else {
+        $message = "Gagal mengarsipkan produk. Kemungkinan produk sudah memiliki riwayat transaksi/pesanan.";
+        $message_type = 'danger';
+    }
 }
 
 // Pagination settings
@@ -66,7 +98,7 @@ $stock_filter = $_GET['stock'] ?? ''; // 'in_stock', 'low_stock', 'all'
 $category_filter = isset($_GET['category_id']) ? (int) $_GET['category_id'] : 0;
 
 // Build WHERE clause for filtering
-$where_conditions = ["user_id = ?"];
+$where_conditions = ["user_id = ?", "is_deleted = 0"];
 $params = [$user_id];
 $param_types = 'i';
 
@@ -104,6 +136,7 @@ if ($category_filter > 0) {
 $where_clause = implode(' AND ', $where_conditions);
 
 // Count total products
+// Tambahkan filter is_deleted = 0 ke count
 $count_query = $conn->prepare("SELECT COUNT(*) as total FROM products WHERE $where_clause");
 if (!$count_query) {
     die("Database error: " . $conn->error);
@@ -153,19 +186,9 @@ if ($categories_query) {
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Manajemen Produk</h2>
-        <div class="btn-group" role="group">
-            <a href="add_product.php" class="btn btn-primary">Tambah Produk</a>
-            <div class="btn-group" role="group">
-                <button id="exportProductsBtn" type="button" class="btn btn-success dropdown-toggle"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-download"></i> Export
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="exportProductsBtn">
-                    <li><a class="dropdown-item" href="export_products.php?format=csv">Export ke CSV</a></li>
-                    <li><a class="dropdown-item" href="export_products.php?format=excel">Export ke Excel</a></li>
-                </ul>
-            </div>
-        </div>
+        <a href="export_products.php?format=csv" class="btn btn-success">
+            <i class="fas fa-file-csv"></i> Export Data (CSV)
+        </a>
     </div>
 
     <?php if ($message): ?>
@@ -300,7 +323,8 @@ if ($categories_query) {
                                 <div class="mt-auto">
                                     <a href="edit_product.php?id=<?php echo $product['id']; ?>"
                                         class="btn btn-warning btn-sm">Edit</a>
-                                    <a href="?delete=<?php echo $product['id']; ?>" class="btn btn-danger btn-sm"
+                                    <a href="?delete=<?php echo $product['id']; ?>&token=<?php echo urlencode(get_csrf_token()); ?>"
+                                        class="btn btn-danger btn-sm"
                                         onclick="return confirm('Yakin hapus produk ini?')">Hapus</a> <a
                                         href="https://wa.me/6282197771318?text=Halo, saya tertarik dengan produk <?php echo urlencode($product['name']); ?>"
                                         class="btn whatsapp-btn btn-sm" target="_blank">WhatsApp</a>

@@ -11,18 +11,10 @@ if (!isset($_SESSION['user_id'])) {
 // Include config
 require_once '../config/includes/config.php';
 
-// Hanya admin yang bisa jalankan migration
-$admin_emails = ['admin@dagang.in', 'developer@dagang.in'];
-$query = "SELECT email FROM users WHERE id = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param('i', $_SESSION['user_id']);
-$stmt->execute();
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
-$stmt->close();
 
-if (!in_array($user['email'], $admin_emails)) {
-    die('Unauthorized access');
+// Hanya Super Admin (user_id = 1) yang boleh jalankan migration
+if ($_SESSION['user_id'] !== 1) {
+    die("Access Denied: Hanya Super Admin (ID 1) yang boleh mengakses ini.");
 }
 
 ?>

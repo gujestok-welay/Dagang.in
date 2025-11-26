@@ -135,14 +135,14 @@ $orders_query->close();
         <div class="btn-group" role="group">
             <a href="add_order.php" class="btn btn-primary">Tambah Pesanan</a>
             <div class="btn-group" role="group">
-                <button id="exportOrdersBtn" type="button" class="btn btn-success dropdown-toggle"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-download"></i> Export
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="exportOrdersBtn">
-                    <li><a class="dropdown-item" href="export_orders.php?format=csv">Export ke CSV</a></li>
-                    <li><a class="dropdown-item" href="export_orders.php?format=excel">Export ke Excel</a></li>
-                </ul>
+                <a href="export_orders.php?format=csv" class="btn btn-success text-white">
+                    <i class="fas fa-file-csv"></i> Data CSV
+                </a>
+
+                <a href="print_orders.php?search=<?php echo urlencode($search); ?>&status=<?php echo urlencode($status_filter); ?>"
+                    target="_blank" class="btn btn-secondary">
+                    <i class="fas fa-print"></i> Cetak Laporan
+                </a>
             </div>
         </div>
     </div>

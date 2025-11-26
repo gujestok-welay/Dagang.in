@@ -3,6 +3,7 @@ $currentPage = 'dashboard';
 $pageTitle = 'Dashboard';
 require_once 'templates/header.php';
 
+
 $user_id = $_SESSION['user_id'];
 
 // Get user info
@@ -12,55 +13,42 @@ $user_query->execute();
 $user_result = $user_query->get_result();
 $user = $user_result->fetch_assoc();
 
-// Get dashboard stats
+// --- Refactor: Ambil statistik produk dengan 1 query ---
 $stats = [];
+$product_stats_query = $conn->prepare("
+    SELECT 
+        COUNT(*) as total_products,
+        SUM(CASE WHEN stock > 0 THEN 1 ELSE 0 END) as in_stock,
+        SUM(CASE WHEN stock > 0 AND stock <= 5 THEN 1 ELSE 0 END) as low_stock
+    FROM products
+    WHERE user_id = ? AND is_deleted = 0
+");
+$product_stats_query->bind_param("i", $user_id);
+$product_stats_query->execute();
+$product_stats = $product_stats_query->get_result()->fetch_assoc();
+$stats['products'] = $product_stats['total_products'] ?? 0;
+$stats['in_stock'] = $product_stats['in_stock'] ?? 0;
+$stats['low_stock'] = $product_stats['low_stock'] ?? 0;
 
-// Total products
-$product_count = $conn->prepare("SELECT COUNT(*) as count FROM products WHERE user_id = ?");
-$product_count->bind_param("i", $user_id);
-$product_count->execute();
-$stats['products'] = $product_count->get_result()->fetch_assoc()['count'];
-
-// Products by stock status
-$in_stock = $conn->prepare("SELECT COUNT(*) as count FROM products WHERE user_id = ? AND stock > 0");
-$in_stock->bind_param("i", $user_id);
-$in_stock->execute();
-$stats['in_stock'] = $in_stock->get_result()->fetch_assoc()['count'];
-
-$low_stock = $conn->prepare("SELECT COUNT(*) as count FROM products WHERE user_id = ? AND stock > 0 AND stock <= 5");
-$low_stock->bind_param("i", $user_id);
-$low_stock->execute();
-$stats['low_stock'] = $low_stock->get_result()->fetch_assoc()['count'];
-
-// Total orders
-$order_count = $conn->prepare("SELECT COUNT(*) as count FROM orders WHERE user_id = ?");
-$order_count->bind_param("i", $user_id);
-$order_count->execute();
-$stats['orders'] = $order_count->get_result()->fetch_assoc()['count'];
-
-// Pending orders
-$pending_orders = $conn->prepare("SELECT COUNT(*) as count FROM orders WHERE user_id = ? AND status IN ('pending', 'processing')");
-$pending_orders->bind_param("i", $user_id);
-$pending_orders->execute();
-$stats['pending_orders'] = $pending_orders->get_result()->fetch_assoc()['count'];
-
-// Total revenue - all completed orders
-$revenue_completed = $conn->prepare("SELECT SUM(total) as total FROM orders WHERE user_id = ? AND status IN ('delivered', 'completed')");
-$revenue_completed->bind_param("i", $user_id);
-$revenue_completed->execute();
-$stats['revenue'] = $revenue_completed->get_result()->fetch_assoc()['total'] ?? 0;
-
-// Revenue this month
-$this_month_revenue = $conn->prepare("SELECT SUM(total) as total FROM orders WHERE user_id = ? AND status IN ('delivered', 'completed') AND MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())");
-$this_month_revenue->bind_param("i", $user_id);
-$this_month_revenue->execute();
-$stats['revenue_month'] = $this_month_revenue->get_result()->fetch_assoc()['total'] ?? 0;
-
-// Unique customers
-$customers = $conn->prepare("SELECT COUNT(DISTINCT customer_id) as count FROM orders WHERE user_id = ?");
-$customers->bind_param("i", $user_id);
-$customers->execute();
-$stats['customers'] = $customers->get_result()->fetch_assoc()['count'];
+// --- Refactor: Ambil statistik order & customer dengan 1 query ---
+$order_stats_query = $conn->prepare("
+    SELECT
+        COUNT(*) as total_orders,
+        SUM(CASE WHEN status IN ('pending', 'processing') THEN 1 ELSE 0 END) as pending_orders,
+        COALESCE(SUM(CASE WHEN status IN ('delivered', 'completed') THEN total ELSE 0 END),0) as revenue,
+        COALESCE(SUM(CASE WHEN status IN ('delivered', 'completed') AND MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW()) THEN total ELSE 0 END),0) as revenue_month,
+        COUNT(DISTINCT customer_id) as total_customers
+    FROM orders
+    WHERE user_id = ?
+");
+$order_stats_query->bind_param("i", $user_id);
+$order_stats_query->execute();
+$order_stats = $order_stats_query->get_result()->fetch_assoc();
+$stats['orders'] = $order_stats['total_orders'] ?? 0;
+$stats['pending_orders'] = $order_stats['pending_orders'] ?? 0;
+$stats['revenue'] = $order_stats['revenue'] ?? 0;
+$stats['revenue_month'] = $order_stats['revenue_month'] ?? 0;
+$stats['customers'] = $order_stats['total_customers'] ?? 0;
 
 // Recent orders
 $recent_orders = $conn->prepare("SELECT o.id, c.name as customer_name, o.total, o.status, o.created_at FROM orders o JOIN customers c ON o.customer_id = c.id WHERE o.user_id = ? ORDER BY o.created_at DESC LIMIT 5");
@@ -107,7 +95,8 @@ foreach ($statuses as $status) {
         <div class="col-md-3 mb-3">
             <div class="card shadow h-100 py-2" style="border-left: 4px solid var(--secondary-color);">
                 <div class="card-body">
-                    <div class="text-uppercase mb-1 font-weight-bold" style="font-size: 0.8rem; color: var(--secondary-color);">
+                    <div class="text-uppercase mb-1 font-weight-bold"
+                        style="font-size: 0.8rem; color: var(--secondary-color);">
                         <i class="fas fa-box"></i> Total Produk
                     </div>
                     <div class="h3 mb-0"><?php echo $stats['products']; ?></div>
@@ -122,7 +111,8 @@ foreach ($statuses as $status) {
         <div class="col-md-3 mb-3">
             <div class="card shadow h-100 py-2" style="border-left: 4px solid var(--accent-color);">
                 <div class="card-body">
-                    <div class="text-uppercase mb-1 font-weight-bold" style="font-size: 0.8rem; color: var(--accent-color);">
+                    <div class="text-uppercase mb-1 font-weight-bold"
+                        style="font-size: 0.8rem; color: var(--accent-color);">
                         <i class="fas fa-shopping-bag"></i> Total Pesanan
                     </div>
                     <div class="h3 mb-0"><?php echo $stats['orders']; ?></div>
@@ -134,7 +124,8 @@ foreach ($statuses as $status) {
         <div class="col-md-3 mb-3">
             <div class="card shadow h-100 py-2" style="border-left: 4px solid var(--secondary-color);">
                 <div class="card-body">
-                    <div class="text-uppercase mb-1 font-weight-bold" style="font-size: 0.8rem; color: var(--secondary-color);">
+                    <div class="text-uppercase mb-1 font-weight-bold"
+                        style="font-size: 0.8rem; color: var(--secondary-color);">
                         <i class="fas fa-chart-line"></i> Pendapatan Total
                     </div>
                     <div class="h3 mb-0">Rp <?php echo number_format($stats['revenue'], 0, ',', '.'); ?></div>
@@ -147,7 +138,8 @@ foreach ($statuses as $status) {
         <div class="col-md-3 mb-3">
             <div class="card shadow h-100 py-2" style="border-left: 4px solid var(--accent-color);">
                 <div class="card-body">
-                    <div class="text-uppercase mb-1 font-weight-bold" style="font-size: 0.8rem; color: var(--accent-color);">
+                    <div class="text-uppercase mb-1 font-weight-bold"
+                        style="font-size: 0.8rem; color: var(--accent-color);">
                         <i class="fas fa-users"></i> Pelanggan
                     </div>
                     <div class="h3 mb-0"><?php echo $stats['customers']; ?></div>

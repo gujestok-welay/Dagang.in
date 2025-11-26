@@ -17,7 +17,7 @@ $stock_filter = $_GET['stock'] ?? ''; // 'in_stock', 'low_stock', 'all'
 $current_page = max(1, (int) ($_GET['page'] ?? 1));
 
 // Build WHERE clause for filtering
-$where_conditions = [];
+$where_conditions = ['products.is_deleted = 0'];
 $params = [];
 $param_types = '';
 

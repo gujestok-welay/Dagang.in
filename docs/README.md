@@ -1,189 +1,122 @@
-# Dagang.in - Aplikasi Web untuk UMKM
+# 🛒 Dagang.in - Solusi Digital UMKM Lokal
 
-Aplikasi web full-stack sederhana untuk membantu UMKM (Usaha Mikro, Kecil, dan Menengah) go digital dengan mudah mengelola produk, stok, pesanan, dan etalase online.
+![Banner Dagang.in](assets/images/log.png)
 
-## 🚀 Fitur Utama
+> **Platform E-Commerce Sederhana & Handal untuk Membantu UMKM Go Digital.**
 
-### Manajemen Produk & Stok
-
-- ✅ Tambah, edit, hapus produk
-- ✅ Upload gambar produk
-- ✅ Stok otomatis berkurang saat pesanan masuk
-- ✅ CRUD lengkap untuk produk
-
-### Pencatatan Pesanan & Pelanggan
-
-- ✅ Form input pesanan baru
-- ✅ Tracking status pesanan (pending, diproses, selesai)
-- ✅ Database pelanggan terintegrasi
-- ✅ Detail pesanan lengkap
-
-### Dashboard Penjualan
-
-- ✅ Ringkasan penjualan harian/bulanan
-- ✅ Grafik sederhana progress penjualan
-- ✅ Statistik produk terlaris
-- ✅ Overview bisnis real-time
-
-### Profil & Etalase Online
-
-- ✅ Halaman profil toko UMKM
-- ✅ Display produk dengan grid layout responsif
-- ✅ Informasi kontak dan alamat lengkap
-
-### Integrasi WhatsApp
-
-- ✅ Tombol chat langsung ke nomor penjual
-- ✅ Pre-filled message dengan produk yang dipilih
-- ✅ Mudah menghubungi pelanggan
-
-## 🛠️ Tech Stack
-
-- **Frontend:** HTML5, CSS3, JavaScript (Vanilla), Bootstrap 5
-- **Backend:** PHP Native (tanpa framework)
-- **Database:** MySQL
-- **Server:** XAMPP Environment
-- **Tools:** VS Code, phpMyAdmin
-
-## 📋 Struktur Database
-
-```sql
-- users: Informasi akun UMKM
-- products: Data produk dan stok
-- customers: Data pelanggan
-- orders: Data pesanan
-- order_items: Detail item dalam pesanan
-```
-
-## 🏗️ Arsitektur Aplikasi
-
-```
-dagang.in/
-├── css/
-│   └── style.css          # Custom styles
-├── js/
-│   └── (future scripts)
-├── includes/
-│   ├── config.php         # Database configuration
-│   └── auth.php           # Authentication functions
-├── php/
-│   └── (future PHP files)
-├── uploads/               # Product images
-├── images/                # Static images
-├── public/index.php       # Public storefront
-├── public/login.php              # Admin login
-├── public/register.php           # Admin registration
-├── dashboard.php          # Admin dashboard
-├── products.php           # Product management
-├── add_product.php        # Add new product
-├── orders.php             # Order management
-├── add_order.php          # Add new order
-├── database_schema.sql    # Database schema
-└── README.md              # This file
-```
-
-## ⚙️ Instalasi & Setup
-
-### Persyaratan Sistem
-
-- XAMPP (Apache, MySQL, PHP)
-- Browser web modern
-- VS Code (opsional)
-
-### Langkah Instalasi
-
-1. **Clone atau Download Project**
-
-   ```bash
-   # Jika menggunakan Git
-   git clone https://github.com/username/dagang.in.git
-   cd dagang.in
-   ```
-
-2. **Setup XAMPP**
-
-   - Pastikan XAMPP terinstall
-   - Start Apache dan MySQL di XAMPP Control Panel
-
-3. **Import Database**
-
-   - Buka phpMyAdmin (http://localhost/phpmyadmin)
-   - Buat database baru: `dagang_in`
-   - Import file `database_schema.sql`
-
-4. **Konfigurasi Database**
-
-   - Edit `includes/config.php` jika perlu
-   - Default: host=localhost, user=root, password=(kosong), db=dagang_in
-
-5. **Akses Aplikasi**
-   - Frontend Toko: http://localhost/dagang.in/
-   - Admin Login: http://localhost/dagang.in/public/login.php
-
-### Akun Default
-
-- Username: admin
-- Password: admin123 (hashed di database)
-
-## 📖 Cara Penggunaan
-
-### Untuk UMKM (Admin)
-
-1. **Registrasi/Login** ke dashboard admin
-2. **Kelola Produk**: Tambah produk baru dengan gambar
-3. **Kelola Pesanan**: Input pesanan manual atau otomatis
-4. **Pantau Dashboard**: Lihat statistik penjualan
-5. **Hubungi Pelanggan**: Via WhatsApp integration
-
-### Untuk Pembeli
-
-1. **Kunjungi Etalase**: Lihat produk di halaman utama
-2. **Pilih Produk**: Klik untuk detail
-3. **Hubungi Penjual**: Tombol WhatsApp langsung
-
-## 🔒 Keamanan
-
-- Password hashing menggunakan `password_hash()`
-- Input sanitization untuk mencegah SQL injection
-- Session-based authentication
-- File upload validation
-
-## 🎨 Tema & UI
-
-- **Tema**: Local dan cocok untuk UMKM Indonesia
-- **Responsif**: Mobile-friendly dengan Bootstrap
-- **User-friendly**: Mudah digunakan tanpa training
-- **Clean Design**: Modern namun sederhana
-
-## 📈 Roadmap Pengembangan
-
-- [ ] Dashboard dengan grafik chart.js
-- [ ] Export laporan PDF/Excel
-- [ ] Multi-user untuk staff
-- [ ] API untuk integrasi marketplace
-- [ ] PWA (Progressive Web App)
-- [ ] Multi-language support
-
-## 🤝 Kontribusi
-
-1. Fork repository
-2. Buat branch fitur baru (`git checkout -b feature/AmazingFeature`)
-3. Commit perubahan (`git commit -m 'Add some AmazingFeature'`)
-4. Push ke branch (`git push origin feature/AmazingFeature`)
-5. Buat Pull Request
-
-## 📄 Lisensi
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
-## 📞 Dukungan
-
-Jika ada pertanyaan atau masalah:
-
-- Email: support@dagang.in
-- WhatsApp: +62 812-3456-7890
-- GitHub Issues: [Buat Issue Baru](https://github.com/username/dagang.in/issues)
+![PHP Version](https://img.shields.io/badge/PHP-8.0%2B-777BB4?style=for-the-badge&logo=php&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)
+![Status](https://img.shields.io/badge/Status-Active-success?style=for-the-badge)
 
 ---
 
-**Dagang.in** - Membantu UMKM Go Digital dengan Mudah! 🚀
+## 📖 Daftar Isi
+
+- [Tentang Proyek](#-tentang-proyek)
+- [Fitur Unggulan](#-fitur-unggulan)
+- [Tech Stack](#-tech-stack)
+- [Struktur Proyek](#-struktur-proyek)
+- [Instalasi & Setup](#-instalasi--setup)
+- [Screenshot](#-screenshot-aplikasi)
+- [Tim Pengembang](#-tim-pengembang)
+
+---
+
+## 💡 Tentang Proyek
+
+**Dagang.in** dibangun untuk menjawab masalah klasik UMKM: pembukuan manual yang berantakan dan jangkauan pasar yang sempit. Aplikasi ini dirancang dengan pendekatan **Mobile-First** dan **User-Friendly** agar mudah digunakan oleh pemilik usaha yang awam teknologi sekalipun.
+
+**Mengapa Dagang.in?**
+
+- ✅ **Ringan:** Dibangun dengan PHP Native yang efisien.
+- ✅ **Aman:** Proteksi CSRF, XSS Filtering, dan Password Hashing.
+- ✅ **Lengkap:** Dari manajemen stok hingga laporan keuangan sederhana.
+
+---
+
+## 🚀 Fitur Unggulan
+
+### 🏢 Untuk Penjual (Admin UMKM)
+
+- **Dashboard Statistik:** Pantau omzet, stok menipis, dan total order secara real-time.
+- **Manajemen Produk:** Tambah, edit, arsip (Soft Delete) produk dengan mudah.
+- **Laporan Fleksibel:** Export data pesanan ke **CSV** (untuk olah data) atau **Cetak PDF** (untuk laporan fisik).
+- **Manajemen Kategori:** Kelola kategori produk dinamis.
+
+### 🛍️ Untuk Pembeli (Pelanggan)
+
+- **Etalase Responsif:** Tampilan nyaman di HP maupun Laptop.
+- **Smart Search:** Filter produk berdasarkan harga, nama, dan ketersediaan stok.
+- **Click-to-Chat:** Tombol WhatsApp otomatis yang langsung menghubungkan pembeli ke penjual dengan pesan pre-filled.
+
+---
+
+## 🛠 Tech Stack
+
+| Komponen         | Teknologi         | Alasan Pemilihan                                                   |
+| :--------------- | :---------------- | :----------------------------------------------------------------- |
+| **Backend**      | PHP Native (8.0+) | Performa tinggi, _low overhead_, mudah di-deploy di hosting murah. |
+| **Frontend**     | HTML5, CSS3, JS   | Vanilla JS untuk interaktivitas ringan tanpa bloatware.            |
+| **Framework UI** | Bootstrap 5       | Responsif dan modern _out-of-the-box_.                             |
+| **Database**     | MySQL / MariaDB   | Relasional database yang stabil untuk transaksi.                   |
+| **Server**       | Apache (XAMPP)    | Environment standar pengembangan web.                              |
+
+---
+
+## 📂 Struktur Proyek
+
+```text
+dagang.in/
+├── admin/              # Panel Admin (Backend Logic)
+│   ├── dashboard.php   # Halaman utama admin
+│   ├── products.php    # CRUD Produk
+│   └── ...
+├── assets/             # Static Assets
+│   ├── css/            # Styling (Custom & Libs)
+│   ├── js/             # JavaScript Logic
+│   └── uploads/        # Folder Gambar Produk
+├── config/             # Konfigurasi & Helper
+│   ├── includes/       # DB Connection, Auth
+│   └── utils/          # Class Helper (Validator, Pagination)
+├── database/           # Skema Database & Migrasi
+├── docs/               # Dokumentasi Proyek
+└── public/             # Halaman Depan (Storefront)
+    ├── index.php       # Landing Page
+    └── ...
+
+
+```
+
+## 📸 Screenshot Aplikasi
+
+|            Halaman Depan (Landing Page)            |                     Dashboard Admin                     |
+| :------------------------------------------------: | :-----------------------------------------------------: |
+| <img src="..\assets\images\home.png" width="100%"> | <img src="..\assets\images\dashboard.png" width="100%"> |
+
+|                   Manajemen Produk                   |                    Detail Produk                     |
+| :--------------------------------------------------: | :--------------------------------------------------: |
+| <img src="..\assets\images\produk.png" width="100%"> | <img src="..\assets\images\detail.png" width="100%"> |
+
+---
+
+## 👥 Tim Pengembang
+
+Proyek ini dikembangkan oleh **Tim Dagang.in** untuk mata kuliah Manajemen Proyek TI (MPTI).
+
+- **Gujestok J. Welay** - _Project Manager & Lead Developer_
+- **Tina** - _UI/UX Designer_
+- **Esly & Joan** - _Frontend Developer_
+- **Mirna & Gloria** - _Backend Developer_
+- **Ralf J. Patikawa** - _Quality Assurance_
+- **Almendo** - _Documentation_
+
+---
+
+## 📄 Lisensi
+
+Didistribusikan di bawah Lisensi MIT. Lihat `LICENSE` untuk informasi lebih lanjut.
+
+---
+
+<center\>Dibuat dengan ❤️ untuk UMKM Indonesia\</center\>

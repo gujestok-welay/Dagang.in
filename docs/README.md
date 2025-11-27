@@ -1,6 +1,6 @@
 # 🛒 Dagang.in - Solusi Digital UMKM Lokal
 
-![Banner Dagang.in](assets/images/log.png)
+![Banner Dagang.in](../assets/images/log.png)
 
 > **Platform E-Commerce Sederhana & Handal untuk Membantu UMKM Go Digital.**
 

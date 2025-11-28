@@ -158,15 +158,7 @@ if ($products_query) {
                         terbaik</p>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-truck"></i>
-                    </div>
-                    <h3 class="feature-title">Pengiriman Cepat</h3>
-                    <p class="feature-description">Proses pesanan dan pengiriman yang efisien ke seluruh Indonesia</p>
-                </div>
-            </div>
+           
             <div class="col-lg-3 col-md-6">
                 <div class="feature-card">
                     <div class="feature-icon">

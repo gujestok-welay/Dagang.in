@@ -131,5 +131,11 @@ Meskipun versi 1.0 sudah rilis, kami memiliki rencana besar untuk Dagang.in vers
 Didistribusikan di bawah Lisensi MIT. Lihat `LICENSE` untuk informasi lebih lanjut.
 
 ---
+## Instalasi
+1. Clone Repo ini ke htdoc
+2. pastikan apache dan mySQL aktif
+3. import semua database ke phpMyAdmin
+4. jalankan Program nya di web : http://localhost/dagang.in/public/
+
 
 <center\>Dibuat dengan ❤️ untuk UMKM Indonesia\</center\>

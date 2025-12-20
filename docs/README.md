@@ -113,6 +113,19 @@ Proyek ini dikembangkan oleh **Tim Dagang.in** untuk mata kuliah Manajemen Proye
 
 ---
 
+---
+
+## 🗺️ Roadmap Pengembangan (Rencana Masa Depan)
+
+Meskipun versi 1.0 sudah rilis, kami memiliki rencana besar untuk Dagang.in versi selanjutnya:
+
+- [ ] **Integrasi Payment Gateway:** Pembayaran otomatis via QRIS/Virtual Account (Midtrans/Xendit).
+- [ ] **Cek Ongkir Otomatis:** Integrasi API RajaOngkir untuk hitung biaya pengiriman.
+- [ ] **Notifikasi Real-time:** Notifikasi WA otomatis ke penjual saat ada pesanan baru.
+- [ ] **Migrasi Framework:** Upgrade backend ke Laravel untuk skalabilitas tinggi.
+
+---
+
 ## 📄 Lisensi
 
 Didistribusikan di bawah Lisensi MIT. Lihat `LICENSE` untuk informasi lebih lanjut.

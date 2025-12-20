@@ -67,9 +67,7 @@
                     <li class="mb-2" style="color: rgba(255,255,255,0.8);">
                         <i class="fas fa-check-circle me-2" style="color: #ffd460;"></i>Harga Terjangkau
                     </li>
-                    <li class="mb-2" style="color: rgba(255,255,255,0.8);">
-                        <i class="fas fa-check-circle me-2" style="color: #ffd460;"></i>Pengiriman Cepat
-                    </li>
+                    
                     <li class="mb-2" style="color: rgba(255,255,255,0.8);">
                         <i class="fas fa-check-circle me-2" style="color: #ffd460;"></i>Customer Service 24/7
                     </li>
@@ -91,7 +89,7 @@
                 </div>
                 <div class="mb-3">
                     <i class="fas fa-map-marker-alt me-2" style="color: #ffd460;"></i>
-                    <span style="color: rgba(255,255,255,0.9);">UKIM, Makassar</span>
+                    <span style="color: rgba(255,255,255,0.9);">UKIM, Ambon</span>
                 </div>
             </div>
         </div>

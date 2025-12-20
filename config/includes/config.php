@@ -17,12 +17,16 @@ if ($conn->connect_error) {
 $conn->set_charset("utf8");
 
 // Define base paths
+<<<<<<< HEAD
 // Determine BASE_URL dynamically so assets load correctly on different hosts
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) ? 'https' : 'http';
 $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
 // dirname(dirname($_SERVER['SCRIPT_NAME'])) => e.g. '/dagang.in' when running '/dagang.in/public/index.php'
 $baseDir = rtrim(dirname(dirname(isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : '/')), '/\\');
 define('BASE_URL', $protocol . '://' . $host . $baseDir);
+=======
+define('BASE_URL', 'http://localhost/dagang.in');
+>>>>>>> 8bfae3cefec1998da64b83121b86d7b5394d1d9b
 define('BASE_PATH', dirname(dirname(dirname(__FILE__))));
 define('PUBLIC_PATH', BASE_PATH . '/public');
 define('ADMIN_PATH', BASE_PATH . '/admin');

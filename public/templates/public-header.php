@@ -53,13 +53,13 @@ $store_name = defined('STORE_NAME') ? STORE_NAME : 'Dagang.in';
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#home">Beranda</a>
+                        <a class="nav-link" href="<?php echo BASE_URL; ?>/public/index.php#home">Beranda</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#products">Produk</a>
+                        <a class="nav-link" href="<?php echo BASE_URL; ?>/public/index.php#products">Produk</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#contact">Kontak</a>
+                        <a class="nav-link" href="<?php echo BASE_URL; ?>/public/index.php#contact">Kontak</a>
                     </li>
                 </ul>
                 <a href="<?php echo BASE_URL; ?>/public/login.php" class="btn btn-accent">Login Admin</a>
